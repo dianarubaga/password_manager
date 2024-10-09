@@ -69,3 +69,13 @@ make
 ./password_manager
 ```
 
+## Setting Up GoogleTest for Unit Testing
+
+This project uses [GoogleTest](https://github.com/google/googletest) as the testing framework. Follow the instructions below to set it up in your environment:
+
+### 1. Add GoogleTest as a Submodule
+
+To include GoogleTest in your project, you need to add it as a submodule. Use the following command:
+
+```bash
+git submodule add https://github.com/google/googletest.git
