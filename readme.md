@@ -79,3 +79,9 @@ To include GoogleTest in your project, you need to add it as a submodule. Use th
 
 ```bash
 git submodule add https://github.com/google/googletest.git
+```
+8.  Run the program: downloading googletest, run the program by executing the following command:
+
+```bash
+./test_password_manager
+```
