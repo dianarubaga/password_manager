@@ -21,7 +21,7 @@ password_manager/
 ├── manager.cpp            # Implementation of Manager and PasswordManager classes
 ├── manager.h              # Declaration of Manager and PasswordManager classes
 ├── user_credentials.csv   # Stores user credentials (username and password)
-└── diana_passwords.dat    # Stores passwords for user 'diana'
+└── user_passwords.dat    # Stores passwords for user 'user'
 ```
 
 ## Setup and Build Instructions
@@ -80,7 +80,9 @@ To include GoogleTest in your project, you need to add it as a submodule. Use th
 ```bash
 git submodule add https://github.com/google/googletest.git
 ```
-8.  Run the program: downloading googletest, run the program by executing the following command:
+### 2. Run the GoogleTest 
+
+  Run the google test: after downloading googletest, run the test by executing the following command:
 
 ```bash
 ./test_password_manager
