@@ -4,9 +4,28 @@
 #include <limits>
 #include <fstream>
 
-// Encrypts the data (simple demonstration, not real encryption)
-void Manager::encrypt(const std::string& data) {
-    std::cout << "Encrypting data: " << data << std::endl;
+using namespace std;
+
+namespace PasswordNS{
+// Static member definition
+const string PasswordManager::encryptionKey = "MySecretKey";
+
+// Constructures, Rules of 3 and 5
+PasswordManager::PasswordManager() : username(""), mainPassword("") {}
+
+PasswordManager::PasswordManager(const PasswordManager &other)
+    : username(other.username), mainPassword(other.mainPassword), credentials(other.credentials) {}
+
+PasswordManager::PasswordManager(PasswordManager &&other) noexcept
+    : username(std::move(other.username)), mainPassword(std::move(other.mainPassword)), credentials(std::move(other.credentials)) {}
+
+PasswordManager &PasswordManager::operator=(const PasswordManager &other) {
+    if (this != &other) {
+        username = other.username;
+        mainPassword = other.mainPassword;
+        credentials = other.credentials;
+    }
+    return *this;
 }
 
 // Validates the password (basic validation: check length)
@@ -147,4 +166,5 @@ string PasswordManager::getCredential(const string& serviceName) {
 // Check if a password exists for a specific service
 bool PasswordManager::hasPassword(const string& serviceName) {
     return credentials.find(serviceName) != credentials.end();
+}
 }
