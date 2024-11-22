@@ -28,10 +28,22 @@ PasswordManager &PasswordManager::operator=(const PasswordManager &other) {
     return *this;
 }
 
-// Validates the password (basic validation: check length)
-bool Manager::validate(const std::string& password) {
-    std::cout << "Validating password: " << password << std::endl;
-    return password.length() > 6;  // Valid if the password is longer than 6 characters
+PasswordManager &PasswordManager::operator=(PasswordManager &&other) noexcept {
+    if (this != &other) {
+        username = std::move(other.username);
+        mainPassword = std::move(other.mainPassword);
+        credentials = std::move(other.credentials);
+    }
+    return *this;
+}
+
+PasswordManager::~PasswordManager() {
+    std::cout << "PasswordManager destroyed for user: " << username << std::endl;
+}
+
+// Inline function implementation
+inline size_t PasswordManager::getPasswordCount() const {
+    return credentials.size();
 }
 
 // PasswordManager constructor
