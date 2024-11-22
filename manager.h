@@ -9,6 +9,7 @@
 
 using namespace std;
 
+namespace PasswordNS{
 // Abstract base class for managing common operations
 class BaseManager
 {
@@ -59,6 +60,11 @@ public:
 
     // Add this method
     void setTestCredentials(const std::string &testUsername, const std::string &testPassword); // For testing
+
+    // Inline function
+    inline size_t getPasswordCount() const { return credentials.size(); }
 };
+
+}
 
 #endif
