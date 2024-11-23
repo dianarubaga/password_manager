@@ -227,7 +227,7 @@ namespace PasswordNS
     bool PasswordManager::hasPassword(const std::string &serviceName)
     {
         // Check if the service exists in the vector
-        return std::any_of(credentials.begin(), credentials.end(),
+        return any_of(credentials.begin(), credentials.end(),
                            [&serviceName](const auto &entry)
                            { return entry.first == serviceName; });
     }
