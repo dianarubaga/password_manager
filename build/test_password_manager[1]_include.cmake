@@ -1,0 +1,5 @@
+if(EXISTS "/Users/talineshawwa/Desktop/programming/password_manager/build/test_password_manager[1]_tests.cmake")
+  include("/Users/talineshawwa/Desktop/programming/password_manager/build/test_password_manager[1]_tests.cmake")
+else()
+  add_test(test_password_manager_NOT_BUILT test_password_manager_NOT_BUILT)
+endif()

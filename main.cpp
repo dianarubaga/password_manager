@@ -1,13 +1,12 @@
 #include "manager.h"
 #include <iostream>
-#include <limits>
 
 using namespace PasswordNS;
 
 int main() {
     PasswordManager pm;
 
-    // Display the welcome message and options
+    // Call login method to prompt user for login or account creation
     std::cout << "Welcome to Password Manager\n";
     std::cout << "1. Login\n";
     std::cout << "2. Create new account\n";
@@ -27,13 +26,13 @@ int main() {
         std::cout << "Enter main password: ";
         std::getline(std::cin, mainPassword);
 
-        pm.setTestCredentials(username, mainPassword);  // Setting credentials for login
+        pm.setTestCredentials(username, mainPassword);  // Setting credentials for normal run
 
         if (pm.loadUserCredentialsFromFile()) {
-            std::cout << "Login successful. Loading your passwords...\n";
-            pm.loadCredentialsFromFile();  // Load user-specific credentials
+            std::cout << "Login successful. Loading your passwords..." << std::endl;
+            pm.loadCredentialsFromFile();  // Correct method to load service credentials after login
         } else {
-            std::cout << "Invalid username or password.\n";
+            std::cout << "Invalid username or password." << std::endl;
             return 1;
         }
     } else if (option == 2) {  // New user registration
@@ -43,18 +42,18 @@ int main() {
         std::cout << "Create your main password: ";
         std::getline(std::cin, mainPassword);
 
-        pm.setTestCredentials(username, mainPassword);  // Set credentials for the new account
+        pm.setTestCredentials(username, mainPassword);  // Setting credentials for new account
 
         if (pm.validate(mainPassword)) {
             pm.encrypt(mainPassword);
             pm.saveUserCredentialsToFile();
-            std::cout << "Account successfully created! You can now use the password manager.\n";
+            std::cout << "Account successfully created! You can now use the password manager." << std::endl;
         } else {
-            std::cout << "Password is too weak! Please choose a stronger password.\n";
+            std::cout << "Password is too weak!" << std::endl;
             return 1;
         }
     } else {
-        std::cout << "Exiting the program...\n";
+        std::cout << "Exiting the program..." << std::endl;
         return 0;
     }
 
@@ -74,7 +73,7 @@ int main() {
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         switch (choice) {
-            case 1: {  // Add a new password
+            case 1: {
                 std::string serviceName, serviceUsername, password;
                 std::cout << "Enter the name for this password (e.g., email, bank): ";
                 std::getline(std::cin, serviceName);
@@ -85,11 +84,11 @@ int main() {
                 pm.addNewPassword(serviceName, serviceUsername, password);
                 break;
             }
-            case 2: {  // Show all stored passwords
+            case 2: {
                 pm.showAllPasswords();
                 break;
             }
-            case 3: {  // Generate a password and use it for a new entry
+            case 3: {
                 int length;
                 std::cout << "Enter password length: ";
                 std::cin >> length;
@@ -99,12 +98,12 @@ int main() {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
                 std::string generatedPassword = pm.generatePassword(length);
-                std::cout << "Generated Password: " << generatedPassword << '\n';
+                std::cout << "Generated Password: " << generatedPassword << std::endl;
 
                 pm.useGeneratedPasswordForNewEntry(generatedPassword);
                 break;
             }
-            case 4: {  // Delete a password by service name
+            case 4: {
                 std::string serviceName;
                 std::cout << "Enter the service name of the password you want to delete: ";
                 std::getline(std::cin, serviceName);
@@ -112,10 +111,10 @@ int main() {
                 break;
             }
             case 5:
-                std::cout << "Exiting the program...\n";
+                std::cout << "Exiting..." << std::endl;
                 break;
             default:
-                std::cout << "Invalid option. Please try again.\n";
+                std::cout << "Invalid option. Please try again." << std::endl;
         }
 
     } while (choice != 5);

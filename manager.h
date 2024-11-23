@@ -9,60 +9,65 @@
 #include <optional> // For std::optional
 #include <memory>
 
-using namespace std;
+namespace PasswordNS
+{
 
-namespace PasswordNS {
+    // Abstract base class for managing common operations
+    class BaseManager
+    {
+    public:
+        virtual void encrypt(const std::string &data) const = 0;      // Pure virtual function for encryption
+        virtual bool validate(const std::string &password) const = 0; // Pure virtual function for validation
+        virtual ~BaseManager() noexcept = default;                    // Virtual destructor
+    };
 
-// Abstract base class for managing common operations
-class BaseManager {
-public:
-    virtual void encrypt(const string &data) const = 0;      // Pure virtual function for encryption
-    virtual bool validate(const string &password) const = 0; // Pure virtual function for validation
-    virtual ~BaseManager() noexcept = default;               // Virtual destructor
-};
+    // Derived class for managing passwords
+    class PasswordManager : public BaseManager
+    {
+    private:
+        std::vector<std::pair<std::string, std::string>> credentials; // Container for credentials (service, password)
+        std::string username;
+        std::string mainPassword;
 
-// Derived class for managing passwords
-class PasswordManager : public BaseManager {
-private:
-    vector<pair<string, string>> credentials; // Container for credentials (service, password)
-    string username;
-    string mainPassword;
+        void saveCredentialsToFile();
+        inline static const std::string encryptionKey = "MySecretKey"; // Inline static member (C++17)
 
-    void saveCredentialsToFile();
-    inline static const string encryptionKey = "MySecretKey";
+    public:
+        // Rule of 3/5: Constructors, Assignment Operators, Destructor
+        PasswordManager();
+        PasswordManager(const PasswordManager &other);
+        PasswordManager(PasswordManager &&other) noexcept;
+        PasswordManager &operator=(const PasswordManager &other);
+        PasswordManager &operator=(PasswordManager &&other) noexcept;
+        ~PasswordManager() noexcept override;
 
-public:
-    // Rule of 3/5: Constructors, Assignment Operators, Destructor
-    PasswordManager();
-    PasswordManager(const PasswordManager &other);
-    PasswordManager(PasswordManager &&other) noexcept;
-    PasswordManager &operator=(const PasswordManager &other);
-    PasswordManager &operator=(PasswordManager &&other) noexcept;
-    ~PasswordManager() noexcept override;
+        // Pure virtual function overrides
+        void encrypt(const std::string &data) const override;      // Encryption implementation
+        bool validate(const std::string &password) const override; // Validation implementation
 
-    // Encapsulation: Getters and Setters
-    void setUsername(const string &name) { username = name; }
-    const string &getUsername() const { return username; }
-    void setMainPassword(const string &password) { mainPassword = password; }
-    const string &getMainPassword() const { return mainPassword; }
+        // Encapsulation: Getters and Setters
+        void setUsername(const std::string &name) { username = name; }
+        const std::string &getUsername() const { return username; }
+        void setMainPassword(const std::string &password) { mainPassword = password; }
+        const std::string &getMainPassword() const { return mainPassword; }
 
-    void addNewPassword(string serviceName, string serviceUsername, string password);
-    void showAllPasswords();
-    void deletePassword(string serviceName);
-    string generatePassword(int length);
-    void useGeneratedPasswordForNewEntry(const string &generatedPassword);
-    void saveUserCredentialsToFile();
-    bool loadUserCredentialsFromFile();
-    void loadCredentialsFromFile();
+        void addNewPassword(std::string serviceName, std::string serviceUsername, std::string password);
+        void showAllPasswords();
+        void deletePassword(std::string serviceName);
+        std::string generatePassword(int length);
+        void useGeneratedPasswordForNewEntry(const std::string &generatedPassword);
+        void saveUserCredentialsToFile();
+        bool loadUserCredentialsFromFile();
+        void loadCredentialsFromFile();
 
-    [[nodiscard]] std::optional<string> getCredential(const string &serviceName);
-    bool hasPassword(const string &serviceName);
+        [[nodiscard]] std::optional<std::string> getCredential(const std::string &serviceName) const;
+        bool hasPassword(const std::string &serviceName) const;
 
-    void setTestCredentials(const string &testUsername, const string &testPassword);
+        void setTestCredentials(const std::string &testUsername, const std::string &testPassword);
 
-    inline size_t getPasswordCount() const { return credentials.size(); }
-};
+        inline size_t getPasswordCount() const { return credentials.size(); }
+    };
 
-}
+} // namespace PasswordNS
 
 #endif
