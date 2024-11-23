@@ -97,9 +97,9 @@ void PasswordManager::loadCredentialsFromFile() {
     }
 }
 
-// Save credentials to a user-specific file
 void PasswordManager::saveCredentialsToFile() {
-    std::ofstream file(username + "_passwords.dat"); // User-specific password file
+    // Open the file in truncate mode to overwrite existing contents
+    std::ofstream file(username + "_passwords.dat", std::ios::trunc);
     if (file.is_open()) {
         for (const auto &entry : credentials) {
             file << entry.first << " " << entry.second << std::endl;
@@ -109,6 +109,7 @@ void PasswordManager::saveCredentialsToFile() {
         std::cerr << "Error: Unable to open " << username << "_passwords.dat for writing." << std::endl;
     }
 }
+
 
 // Add a new password for a service
 void PasswordManager::addNewPassword(std::string serviceName, std::string serviceUsername, std::string password) {
