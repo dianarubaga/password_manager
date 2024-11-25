@@ -1,6 +1,8 @@
 #include "manager.h"
 #include <iostream>
 
+using namespace PasswordNS;
+
 int main() {
     PasswordManager pm;
 

@@ -3,32 +3,60 @@
 #include <iostream>
 #include <limits>
 #include <fstream>
+#include <algorithm> // For std::any_of and std::remove_if
 
-// Encrypts the data (simple demonstration, not real encryption)
-void Manager::encrypt(const std::string& data) {
+namespace PasswordNS {
+
+// Implementation of encrypt
+void PasswordManager::encrypt(const std::string &data) const {
     std::cout << "Encrypting data: " << data << std::endl;
 }
 
-// Validates the password (basic validation: check length)
-bool Manager::validate(const std::string& password) {
-    std::cout << "Validating password: " << password << std::endl;
-    return password.length() > 6;  // Valid if the password is longer than 6 characters
+// Implementation of validate
+bool PasswordManager::validate(const std::string &password) const {
+    return password.length() > 8; // Password must be longer than 8 characters
 }
 
-// PasswordManager constructor
-PasswordManager::PasswordManager() {
-    // No user interaction here - constructor just initializes the class
+// Rule of 3 and 5 implementations
+PasswordManager::PasswordManager() : username(""), mainPassword("") {}
+
+PasswordManager::PasswordManager(const PasswordManager &other)
+    : username(other.username), mainPassword(other.mainPassword), credentials(other.credentials) {}
+
+PasswordManager::PasswordManager(PasswordManager &&other) noexcept
+    : username(std::move(other.username)), mainPassword(std::move(other.mainPassword)), credentials(std::move(other.credentials)) {}
+
+PasswordManager &PasswordManager::operator=(const PasswordManager &other) {
+    if (this != &other) {
+        username = other.username;
+        mainPassword = other.mainPassword;
+        credentials = other.credentials;
+    }
+    return *this;
+}
+
+PasswordManager &PasswordManager::operator=(PasswordManager &&other) noexcept {
+    if (this != &other) {
+        username = std::move(other.username);
+        mainPassword = std::move(other.mainPassword);
+        credentials = std::move(other.credentials);
+    }
+    return *this;
+}
+
+PasswordManager::~PasswordManager() noexcept {
+    std::cout << "PasswordManager destroyed for user: " << username << std::endl;
 }
 
 // Set credentials for testing
-void PasswordManager::setTestCredentials(const std::string& testUsername, const std::string& testPassword) {
+void PasswordManager::setTestCredentials(const std::string &testUsername, const std::string &testPassword) {
     this->username = testUsername;
     this->mainPassword = testPassword;
 }
 
 // Save user credentials to file
 void PasswordManager::saveUserCredentialsToFile() {
-    ofstream file("user_credentials.csv", ios::app);  // Append mode
+    std::ofstream file("user_credentials.csv", std::ios::app); // Append mode
     if (file.is_open()) {
         file << username << "," << mainPassword << std::endl;
         std::cout << "Saving credentials: " << username << ", " << mainPassword << std::endl;
@@ -40,16 +68,16 @@ void PasswordManager::saveUserCredentialsToFile() {
 
 // Load user credentials from file
 bool PasswordManager::loadUserCredentialsFromFile() {
-    ifstream file("user_credentials.csv");
+    std::ifstream file("user_credentials.csv");
     if (file.is_open()) {
-        string line, file_username, file_password;
-        while (getline(file, line)) {
-            stringstream ss(line);
-            getline(ss, file_username, ',');
-            getline(ss, file_password, ',');
+        std::string line, file_username, file_password;
+        while (std::getline(file, line)) {
+            std::stringstream ss(line);
+            std::getline(ss, file_username, ',');
+            std::getline(ss, file_password, ',');
 
             if (file_username == username && file_password == mainPassword) {
-                return true;  // Credentials match
+                return true; // Credentials match
             }
         }
         file.close();
@@ -59,22 +87,22 @@ bool PasswordManager::loadUserCredentialsFromFile() {
 
 // Load credentials from a user-specific file
 void PasswordManager::loadCredentialsFromFile() {
-    ifstream file(username + "_passwords.dat");  // Load from user-specific password file
+    std::ifstream file(username + "_passwords.dat"); // Load from user-specific password file
     if (file.is_open()) {
-        string serviceName, serviceUsername, password;
-        while (file >> serviceName >> serviceUsername >> password) {
-            credentials[serviceName] = make_pair(serviceUsername, password);
+        std::string serviceName, password;
+        while (file >> serviceName >> password) {
+            credentials.emplace_back(serviceName, password);
         }
         file.close();
     }
 }
 
-// Save credentials to a user-specific file
 void PasswordManager::saveCredentialsToFile() {
-    ofstream file(username + "_passwords.dat");  // User-specific password file
+    // Open the file in truncate mode to overwrite existing contents
+    std::ofstream file(username + "_passwords.dat", std::ios::trunc);
     if (file.is_open()) {
-        for (auto &entry : credentials) {
-            file << entry.first << " " << entry.second.first << " " << entry.second.second << endl;
+        for (const auto &entry : credentials) {
+            file << entry.first << " " << entry.second << std::endl;
         }
         file.close();
     } else {
@@ -82,11 +110,12 @@ void PasswordManager::saveCredentialsToFile() {
     }
 }
 
+
 // Add a new password for a service
-void PasswordManager::addNewPassword(string serviceName, string serviceUsername, string password) {
+void PasswordManager::addNewPassword(std::string serviceName, std::string serviceUsername, std::string password) {
     if (validate(password)) {
         encrypt(password);
-        credentials[serviceName] = make_pair(serviceUsername, password);
+        credentials.emplace_back(serviceName, password);
         saveCredentialsToFile();
         std::cout << "Password successfully added for " << serviceName << " (Username: " << serviceUsername << ")." << std::endl;
     } else {
@@ -99,17 +128,19 @@ void PasswordManager::showAllPasswords() {
     if (credentials.empty()) {
         std::cout << "No passwords stored." << std::endl;
     } else {
-        for (auto &entry : credentials) {
-            std::cout << entry.first << " (Username: " << entry.second.first << "): " << entry.second.second << std::endl;
+        for (const auto &entry : credentials) {
+            std::cout << "Service: " << entry.first << ", Password: " << entry.second << std::endl;
         }
     }
 }
 
 // Delete a password by service name
-void PasswordManager::deletePassword(string serviceName) {
-    if (credentials.find(serviceName) != credentials.end()) {
-        credentials.erase(serviceName);
-        saveCredentialsToFile();  // Update the file after deletion
+void PasswordManager::deletePassword(std::string serviceName) {
+    auto it = std::remove_if(credentials.begin(), credentials.end(),
+                             [&serviceName](const auto &entry) { return entry.first == serviceName; });
+    if (it != credentials.end()) {
+        credentials.erase(it, credentials.end());
+        saveCredentialsToFile();
         std::cout << "Password for " << serviceName << " has been deleted." << std::endl;
     } else {
         std::cout << "Service " << serviceName << " not found." << std::endl;
@@ -117,34 +148,39 @@ void PasswordManager::deletePassword(string serviceName) {
 }
 
 // Generate a simple random password
-string PasswordManager::generatePassword(int length) {
+std::string PasswordManager::generatePassword(int length) {
     std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-    std::string password = "";
-    for (int i = 0; i < length; i++) {
+    std::string password;
+    for (int i = 0; i < length; ++i) {
         password += characters[rand() % characters.size()];
     }
     return password;
 }
 
 // Use generated password to create a new entry
-void PasswordManager::useGeneratedPasswordForNewEntry(const string& generatedPassword) {
-    string serviceName, serviceUsername;
+void PasswordManager::useGeneratedPasswordForNewEntry(const std::string &generatedPassword) {
+    std::string serviceName, serviceUsername;
     std::cout << "Enter the service name: ";
-    std::getline(cin, serviceName);
+    std::getline(std::cin, serviceName);
     std::cout << "Enter the username for this service: ";
-    std::getline(cin, serviceUsername);
+    std::getline(std::cin, serviceUsername);
     addNewPassword(serviceName, serviceUsername, generatedPassword);
 }
 
-// Get the password for a specific service
-string PasswordManager::getCredential(const string& serviceName) {
-    if (credentials.find(serviceName) != credentials.end()) {
-        return credentials[serviceName].second;
+// Use optional for returning a credential
+std::optional<std::string> PasswordManager::getCredential(const std::string &serviceName) const {
+    for (const auto &entry : credentials) {
+        if (entry.first == serviceName) {
+            return entry.second;
+        }
     }
-    return "";
+    return std::nullopt;
 }
 
-// Check if a password exists for a specific service
-bool PasswordManager::hasPassword(const string& serviceName) {
-    return credentials.find(serviceName) != credentials.end();
+// Check if a password exists
+bool PasswordManager::hasPassword(const std::string &serviceName) const {
+    return std::any_of(credentials.begin(), credentials.end(),
+                       [&serviceName](const auto &entry) { return entry.first == serviceName; });
 }
+
+} // namespace PasswordNS
