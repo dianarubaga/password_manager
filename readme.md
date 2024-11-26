@@ -35,35 +35,41 @@ password_manager/
 
 1. **Clone or download the repository** to your local machine.
 
-2. **Navigate to the project directory**:
+
+2. **clone google test** with this command 
+```bash
+git clone https://github.com/google/googletest.git /yourPathinyour computer/ 
+```
+
+3. **Navigate to the project directory**:
 
 ```bash
 cd 
 ```
 
-3. **Create a build directory**:
+5. **Create a build directory**:
 
 ```bash
 mkdir build
 ```
 
-4. **Navigate to the build directory**:
+6. **Navigate to the build directory**:
 
 ```bash
 cd build
 ```
 
-5.  Run CMake to generate the necessary build files:
+7.  Run CMake to generate the necessary build files:
 
 ```bash
 cmake ..
 ```
-6.  Compile the project using make:
+8.  Compile the project using make:
 
 ```bash
 make
 ```
-7.  Run the program: After building, run the program by executing the following command:
+9.  Run the program: After building, run the program by executing the following command:
 
 ```bash
 ./password_manager
