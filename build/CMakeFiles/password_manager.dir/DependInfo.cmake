@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/talineshawwa/Desktop/programming/password_manager/main.cpp" "CMakeFiles/password_manager.dir/main.cpp.o" "gcc" "CMakeFiles/password_manager.dir/main.cpp.o.d"
-  "/Users/talineshawwa/Desktop/programming/password_manager/manager.cpp" "CMakeFiles/password_manager.dir/manager.cpp.o" "gcc" "CMakeFiles/password_manager.dir/manager.cpp.o.d"
+  "/Users/dianarubaga/Desktop/code/c++/github/password_manager/main.cpp" "CMakeFiles/password_manager.dir/main.cpp.o" "gcc" "CMakeFiles/password_manager.dir/main.cpp.o.d"
+  "/Users/dianarubaga/Desktop/code/c++/github/password_manager/manager.cpp" "CMakeFiles/password_manager.dir/manager.cpp.o" "gcc" "CMakeFiles/password_manager.dir/manager.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
