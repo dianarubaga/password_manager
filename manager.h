@@ -8,13 +8,12 @@
 #include <utility>
 #include <optional> // For std::optional
 #include <memory>
+#include "Huffman-Encoding/Huffman_C/huffman.cpp" // Include Huffman Encoding library
 
-namespace PasswordNS
-{
+namespace PasswordNS {
 
     // Abstract base class for managing common operations
-    class BaseManager
-    {
+    class BaseManager {
     public:
         virtual void encrypt(const std::string &data) const = 0;      // Pure virtual function for encryption
         virtual bool validate(const std::string &password) const = 0; // Pure virtual function for validation
@@ -22,8 +21,7 @@ namespace PasswordNS
     };
 
     // Derived class for managing passwords
-    class PasswordManager : public BaseManager
-    {
+    class PasswordManager : public BaseManager {
     private:
         std::vector<std::pair<std::string, std::string>> credentials; // Container for credentials (service, password)
         std::string username;
@@ -56,6 +54,8 @@ namespace PasswordNS
         void deletePassword(std::string serviceName);
         std::string generatePassword(int length);
         void useGeneratedPasswordForNewEntry(const std::string &generatedPassword);
+
+        // File Handling
         void saveUserCredentialsToFile();
         bool loadUserCredentialsFromFile();
         void loadCredentialsFromFile();

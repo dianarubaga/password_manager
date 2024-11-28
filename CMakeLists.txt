@@ -23,6 +23,10 @@ set(SOURCES
     manager.cpp
 )
 
+# Add the Huffman library
+add_library(HuffmanLib Huffman-Encoding/Huffman_C/huffman.cpp)
+target_include_directories(HuffmanLib PUBLIC lib)
+
 # Add an executable with the above sources
 add_executable(password_manager ${SOURCES})
 
@@ -32,8 +36,8 @@ target_include_directories(password_manager
         ${PROJECT_SOURCE_DIR}
 )
 
-# Link libraries (add any additional libraries if needed)
-target_link_libraries(password_manager PRIVATE pthread)
+# Link libraries (including Huffman and pthread) to the main executable
+target_link_libraries(password_manager PRIVATE HuffmanLib pthread)
 
 # Enable testing
 enable_testing()

@@ -93,3 +93,6 @@ git submodule add https://github.com/google/googletest.git
 ```bash
 ./test_password_manager
 ```
+
+
+git submodule add https://github.com/BaptisteEtroy/Huffman-Encoding.git
