@@ -8,7 +8,7 @@
 #include <utility>
 #include <optional> // For std::optional
 #include <memory>
-#include "Huffman-Encoding/Huffman_C/huffman.cpp" // Include Huffman Encoding library
+#include "Huffman-Encoding/Huffman_C/huffman.h"// Include Huffman Encoding library
 
 namespace PasswordNS {
 

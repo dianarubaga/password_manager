@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <iomanip> // For formatting output
 #include <stdexcept> // For exceptions
-#include "Huffman-Encoding/Huffman_C/huffman.cpp" // Include Huffman Encoding library
+#include "Huffman-Encoding/Huffman_C/huffman.h"// Include Huffman Encoding library
 
 namespace PasswordNS {
 
