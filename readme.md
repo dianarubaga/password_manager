@@ -94,5 +94,4 @@ git submodule add https://github.com/google/googletest.git
 ./test_password_manager
 ```
 
-
-git submodule add https://github.com/BaptisteEtroy/Huffman-Encoding.git
+Documentation for Huffman Compression can be found here: [![Huffman](https://img.shields.io/badge/Testing-Documentation-blue)](./huffman_compression.md)

@@ -4,7 +4,8 @@
 #include <algorithm>
 #include <iomanip> // For formatting output
 #include <stdexcept> // For exceptions
-#include "Huffman-Encoding/Huffman_C/huffman.h"// Include Huffman Encoding library
+#include <filesystem> // For checking file existence
+#include "Huffman-Encoding/Huffman_C/huffman.h" // Include Huffman Encoding library
 
 namespace PasswordNS {
 
@@ -64,6 +65,7 @@ namespace PasswordNS {
         encrypt(password);
         credentials.emplace_back(serviceName, serviceUsername + ":" + password);
         saveCredentialsToFile();
+        std::cout << "Password successfully added for service: " << serviceName << std::endl;
     }
 
     // Show All Stored Passwords
@@ -100,6 +102,7 @@ namespace PasswordNS {
         if (it != credentials.end()) {
             credentials.erase(it, credentials.end());
             saveCredentialsToFile();
+            std::cout << "Password for service: " << serviceName << " has been deleted." << std::endl;
         } else {
             throw std::invalid_argument("Service not found.");
         }
@@ -133,62 +136,59 @@ namespace PasswordNS {
         addNewPassword(serviceName, serviceUsername, generatedPassword);
     }
 
-    // Save User Credentials to File with Compression
+    // Save User Credentials to File
     void PasswordManager::saveUserCredentialsToFile() {
-        // Step 1: Write serialized credentials to a temporary file
-        std::string tempInputFile = "temp_user_credentials.txt";
-        std::ofstream tempFile(tempInputFile, std::ios::trunc);
-        if (!tempFile.is_open()) {
-            throw std::ios_base::failure("Unable to open temporary file for writing.");
+        std::ofstream file("user_credentials.csv", std::ios::trunc);
+        if (!file.is_open()) {
+            throw std::ios_base::failure("Unable to open 'user_credentials.csv' for writing.");
         }
 
-        tempFile << username << "," << mainPassword << "\n";
-        tempFile.close();
-
-        // Step 2: Compress the temporary file to the final output file
-        std::string compressedFile = "user_credentials.csv";
-        Compression compressor;
-        if (!compressor.compress(tempInputFile, compressedFile)) {
-            throw std::runtime_error("Failed to compress user credentials.");
-        }
-
-        // Step 3: Remove the temporary input file
-        std::remove(tempInputFile.c_str());
+        file << username << "," << mainPassword << std::endl;
     }
 
-    // Load User Credentials from File with Decompression
+    // Load User Credentials from File
     bool PasswordManager::loadUserCredentialsFromFile() {
-        // Step 1: Decompress the credentials file to a temporary file
-        std::string compressedFile = "user_credentials.csv";
-        std::string tempOutputFile = "temp_user_credentials.txt";
-
-        Decompression decompressor;
-        if (!decompressor.decompress(compressedFile, tempOutputFile)) {
-            throw std::runtime_error("Failed to decompress user credentials.");
-        }
-
-        // Step 2: Read and parse the decompressed data
-        std::ifstream tempFile(tempOutputFile);
-        if (!tempFile.is_open()) {
-            throw std::ios_base::failure("Unable to open temporary file for reading.");
-        }
-
-        std::string line, file_username, file_password;
-        while (std::getline(tempFile, line)) {
-            std::stringstream lineStream(line);
-            std::getline(lineStream, file_username, ',');
-            std::getline(lineStream, file_password, ',');
-
-            if (file_username == username && file_password == mainPassword) {
-                tempFile.close();
-                std::remove(tempOutputFile.c_str()); // Clean up the temporary file
-                return true; // Credentials match
+        if (std::filesystem::exists("user_credentials.huff")) {
+            Decompression decompressor;
+            if (!decompressor.decompress("user_credentials.huff", "user_credentials.csv")) {
+                std::cerr << "Failed to decompress user credentials." << std::endl;
+                return false;
             }
         }
 
-        tempFile.close();
-        std::remove(tempOutputFile.c_str()); // Clean up the temporary file
-        return false; // No matching credentials found
+        std::ifstream file("user_credentials.csv");
+        if (!file.is_open()) {
+            std::cerr << "Unable to open 'user_credentials.csv' for reading." << std::endl;
+            return false;
+        }
+
+        std::string line, file_username, file_password;
+        while (std::getline(file, line)) {
+            std::stringstream ss(line);
+            std::getline(ss, file_username, ',');
+            std::getline(ss, file_password, ',');
+
+            if (file_username == username && file_password == mainPassword) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void PasswordManager::compressOnExit() {
+        Compression compressor;
+        if (compressor.compress("user_credentials.csv", "user_credentials.huff")) {
+            std::cout << "Compressed credentials successfully!" << std::endl;
+        } else {
+            std::cerr << "Failed to compress credentials." << std::endl;
+        }
+    }
+
+    // Exit Handling - Compress database
+    void PasswordManager::handleExit() {
+        compressOnExit();
+        std::cout << "Exiting Password Manager..." << std::endl;
     }
 
     // Load Stored Passwords from File
@@ -217,7 +217,6 @@ namespace PasswordNS {
         }
     }
 
-    // Retrieve Credential for a Specific Service
     std::optional<std::string> PasswordManager::getCredential(const std::string &serviceName) const {
         for (const auto &entry : credentials) {
             if (entry.first == serviceName) {
@@ -227,7 +226,6 @@ namespace PasswordNS {
         return std::nullopt;
     }
 
-    // Check if a Password Exists for a Specific Service
     bool PasswordManager::hasPassword(const std::string &serviceName) const {
         return std::any_of(credentials.begin(), credentials.end(),
                            [&serviceName](const auto &entry) { return entry.first == serviceName; });

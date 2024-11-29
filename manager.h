@@ -8,12 +8,14 @@
 #include <utility>
 #include <optional> // For std::optional
 #include <memory>
-#include "Huffman-Encoding/Huffman_C/huffman.h"// Include Huffman Encoding library
+#include "Huffman-Encoding/Huffman_C/huffman.h" // Include Huffman Encoding library
 
-namespace PasswordNS {
+namespace PasswordNS
+{
 
     // Abstract base class for managing common operations
-    class BaseManager {
+    class BaseManager
+    {
     public:
         virtual void encrypt(const std::string &data) const = 0;      // Pure virtual function for encryption
         virtual bool validate(const std::string &password) const = 0; // Pure virtual function for validation
@@ -21,7 +23,8 @@ namespace PasswordNS {
     };
 
     // Derived class for managing passwords
-    class PasswordManager : public BaseManager {
+    class PasswordManager : public BaseManager
+    {
     private:
         std::vector<std::pair<std::string, std::string>> credentials; // Container for credentials (service, password)
         std::string username;
@@ -29,6 +32,7 @@ namespace PasswordNS {
 
         void saveCredentialsToFile();
         inline static const std::string encryptionKey = "MySecretKey"; // Inline static member (C++17)
+        void compressOnExit();                                        // Compress credentials on exit
 
     public:
         // Rule of 3/5: Constructors, Assignment Operators, Destructor
@@ -54,10 +58,8 @@ namespace PasswordNS {
         void deletePassword(std::string serviceName);
         std::string generatePassword(int length);
         void useGeneratedPasswordForNewEntry(const std::string &generatedPassword);
-
-        // File Handling
         void saveUserCredentialsToFile();
-        bool loadUserCredentialsFromFile();
+        bool loadUserCredentialsFromFile(); // Handles decompression if necessary
         void loadCredentialsFromFile();
 
         [[nodiscard]] std::optional<std::string> getCredential(const std::string &serviceName) const;
@@ -66,6 +68,9 @@ namespace PasswordNS {
         void setTestCredentials(const std::string &testUsername, const std::string &testPassword);
 
         inline size_t getPasswordCount() const { return credentials.size(); }
+
+        // Handles user exit and compresses data
+        void handleExit();
     };
 
 } // namespace PasswordNS
