@@ -36,7 +36,7 @@ password_manager/
 1. **Clone or download the repository** to your local machine.
 
 
-2. **clone google test** with this command 
+2. **clone google test** with this specific command 
 ```bash
 git clone https://github.com/google/googletest.git /yourPathinyour computer/ 
 ```
