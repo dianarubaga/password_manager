@@ -41,7 +41,12 @@ password_manager/
 git clone https://github.com/google/googletest.git /yourPathinyour computer/ 
 ```
 
-3. **Navigate to the project directory**:
+3.Add Huffman Encoding as a submodule:
+   ```bash
+   git submodule add https://github.com/BaptisteEtroy/Huffman-Encoding.git
+   ```
+
+4. **Navigate to the project directory**:
 
 ```bash
 cd 

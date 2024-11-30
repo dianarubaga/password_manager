@@ -138,13 +138,15 @@ namespace PasswordNS {
 
     // Save User Credentials to File
     void PasswordManager::saveUserCredentialsToFile() {
-        std::ofstream file("user_credentials.csv", std::ios::trunc);
-        if (!file.is_open()) {
-            throw std::ios_base::failure("Unable to open 'user_credentials.csv' for writing.");
-        }
-
-        file << username << "," << mainPassword << std::endl;
+    // Open the file in append mode
+    std::ofstream file("user_credentials.csv", std::ios::app);
+    if (!file.is_open()) {
+        throw std::ios_base::failure("Unable to open 'user_credentials.csv' for writing.");
     }
+
+    // Write the new username and password at the end of the file
+    file << username << "," << mainPassword << "\n";
+}
 
     // Load User Credentials from File
     bool PasswordManager::loadUserCredentialsFromFile() {

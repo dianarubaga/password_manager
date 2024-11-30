@@ -101,7 +101,7 @@ int main() {
                 std::getline(std::cin, serviceName);
                 std::cout << "Enter the username for this service: ";
                 std::getline(std::cin, serviceUsername);
-                std::cout << "Enter password: ";
+                std::cout << "Enter password: (must be longer than 8 char for security) ";
                 std::getline(std::cin, password);
 
                 // Error Handling: Validate non-empty input
