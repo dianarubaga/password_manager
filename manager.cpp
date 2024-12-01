@@ -1,4 +1,5 @@
 #include "manager.h"
+#include "encryption.h"
 #include <sstream>
 #include <random>
 #include <algorithm>
