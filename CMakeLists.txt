@@ -50,3 +50,7 @@ target_link_libraries(test_password_manager GTest::gtest_main pthread)
 # Discover and run tests
 include(GoogleTest)
 gtest_discover_tests(test_password_manager)
+
+#package for open ssl
+find_package(OpenSSL REQUIRED)
+target_link_libraries(password_manager OpenSSL::SSL)
