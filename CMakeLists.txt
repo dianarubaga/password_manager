@@ -33,7 +33,12 @@ target_include_directories(password_manager
 )
 
 # Link libraries (add any additional libraries if needed)
-target_link_libraries(password_manager PRIVATE pthread)
+target_link_libraries(password_manager 
+    PRIVATE 
+        pthread 
+        OpenSSL::SSL 
+        OpenSSL::Crypto
+)
 
 # Enable testing
 enable_testing()
@@ -45,12 +50,17 @@ add_executable(test_password_manager
 )
 
 # Link the Google Test libraries to your test executable
-target_link_libraries(test_password_manager GTest::gtest_main pthread)
+target_link_libraries(test_password_manager 
+    PRIVATE 
+        GTest::gtest_main 
+        pthread 
+        OpenSSL::SSL 
+        OpenSSL::Crypto
+)
 
 # Discover and run tests
 include(GoogleTest)
 gtest_discover_tests(test_password_manager)
 
-#package for open ssl
+# Find OpenSSL
 find_package(OpenSSL REQUIRED)
-target_link_libraries(password_manager OpenSSL::SSL)

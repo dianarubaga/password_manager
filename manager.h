@@ -30,7 +30,6 @@ namespace PasswordNS
         std::string mainPassword;
 
         void saveCredentialsToFile();
-        inline static const std::string encryptionKey = "MySecretKey"; // Inline static member (C++17)
 
     public:
         // Rule of 3/5: Constructors, Assignment Operators, Destructor

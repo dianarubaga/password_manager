@@ -4,6 +4,8 @@
 #include <cstring>
 #include <stdexcept>
 
+namespace EncryptionNS {
+
 std::vector<unsigned char> encrypt(const std::string &plaintext, const std::string &key) {
     const unsigned char *key_data = reinterpret_cast<const unsigned char *>(key.c_str());
     unsigned char iv[16] = {}; // Use a secure random IV in production
@@ -47,3 +49,5 @@ std::string decrypt(const std::vector<unsigned char> &ciphertext, const std::str
     EVP_CIPHER_CTX_free(ctx);
     return std::string(plaintext.begin(), plaintext.end());
 }
+
+} // namespace EncryptionNS

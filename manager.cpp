@@ -3,13 +3,10 @@
 #include <sstream>
 #include <random>
 #include <algorithm>
-#include <iomanip> // For formatting output
-#include <stdexcept> // For exceptions
+#include <iomanip>
+#include <stdexcept>
 
 namespace PasswordNS {
-
-// Encryption Key (32 bytes for AES-256)
-constexpr char encryptionKey[] = "my_32_byte_secure_key_for_aes";
 
 // Constructor Definitions
 PasswordManager::PasswordManager() : username(""), mainPassword("") {}
@@ -60,12 +57,14 @@ void PasswordManager::addNewPassword(std::string serviceName, std::string servic
     }
 
     // Encrypt the password
-    auto encryptedPassword = encrypt(password, encryptionKey);
+    auto encryptedPassword = EncryptionNS::encrypt(password, "my_32_byte_secure_key");
 
     // Convert encrypted password to hex
     std::string encryptedPasswordHex;
     for (unsigned char c : encryptedPassword) {
-        encryptedPasswordHex += sprintf("%02x", c);
+        std::ostringstream oss;
+        oss << std::hex << std::setfill('0') << std::setw(2) << static_cast<int>(c);
+        encryptedPasswordHex += oss.str();
     }
 
     credentials.emplace_back(serviceName, serviceUsername + ":" + encryptedPasswordHex);
@@ -102,7 +101,7 @@ void PasswordManager::showAllPasswords() {
         }
 
         // Decrypt password
-        std::string password = decrypt(encryptedPassword, encryptionKey);
+        std::string password = EncryptionNS::decrypt(encryptedPassword, "my_32_byte_secure_key");
 
         std::cout << std::setw(20) << service
                   << std::setw(20) << username
@@ -110,71 +109,53 @@ void PasswordManager::showAllPasswords() {
     }
 }
 
-// Delete a Password
-void PasswordManager::deletePassword(std::string serviceName) {
-    auto it = std::remove_if(credentials.begin(), credentials.end(),
-                             [&serviceName](const auto &entry) { return entry.first == serviceName; });
-
-    if (it != credentials.end()) {
-        credentials.erase(it, credentials.end());
-        saveCredentialsToFile();
-        std::cout << "Password for service: " << serviceName << " has been deleted." << std::endl;
-    } else {
-        throw std::invalid_argument("Service not found.");
+// Generate a Random Password
+std::string PasswordManager::generatePassword(int length) {
+    if (length <= 0) {
+        throw std::invalid_argument("Password length must be greater than 0.");
     }
+
+    const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+    std::string password;
+    std::random_device rd;
+    std::mt19937 generator(rd());
+    std::uniform_int_distribution<> dist(0, characters.size() - 1);
+
+    for (int i = 0; i < length; ++i) {
+        password += characters[dist(generator)];
+    }
+    return password;
 }
 
-// Save User Credentials to File
-void PasswordManager::saveUserCredentialsToFile() {
-    std::ofstream file("user_credentials.csv", std::ios::app);
-    if (!file.is_open()) {
-        throw std::ios_base::failure("Unable to open 'user_credentials.csv' for writing.");
-    }
+// Use Generated Password
+void PasswordManager::useGeneratedPasswordForNewEntry(const std::string &generatedPassword) {
+    std::string serviceName, serviceUsername;
+    std::cout << "Enter the service name: ";
+    std::getline(std::cin, serviceName);
+    std::cout << "Enter the username for this service: ";
+    std::getline(std::cin, serviceUsername);
 
-    file << username << "," << mainPassword << std::endl;
+    addNewPassword(serviceName, serviceUsername, generatedPassword);
 }
 
-// Save Credentials to File (Encrypt Passwords)
-void PasswordManager::saveCredentialsToFile() {
-    std::ofstream file(username + "_passwords.dat", std::ios::trunc);
+// Load User Credentials from File
+bool PasswordManager::loadUserCredentialsFromFile() {
+    std::ifstream file("user_credentials.csv");
     if (!file.is_open()) {
-        throw std::ios_base::failure("Unable to open '" + username + "_passwords.dat' for writing.");
+        throw std::ios_base::failure("Unable to open 'user_credentials.csv' for reading.");
     }
 
-    for (const auto &entry : credentials) {
-        file << entry.first << " " << entry.second << std::endl;
-    }
-}
-
-// Load Credentials from File (Decrypt Passwords)
-void PasswordManager::loadCredentialsFromFile() {
-    std::ifstream file(username + "_passwords.dat");
-    if (!file.is_open()) {
-        throw std::ios_base::failure("Unable to open '" + username + "_passwords.dat' for reading.");
-    }
-
-    credentials.clear();
-    std::string line;
+    std::string line, file_username, file_password;
     while (std::getline(file, line)) {
-        size_t spacePos = line.find(' ');
-        size_t colonPos = line.find(':');
+        std::stringstream ss(line);
+        std::getline(ss, file_username, ',');
+        std::getline(ss, file_password, ',');
 
-        std::string serviceName = line.substr(0, spacePos);
-        std::string username = line.substr(spacePos + 1, colonPos - spacePos - 1);
-        std::string passwordHex = line.substr(colonPos + 1);
-
-        // Convert hex to binary
-        std::vector<unsigned char> encryptedPassword;
-        for (size_t i = 0; i < passwordHex.size(); i += 2) {
-            unsigned char byte = std::stoi(passwordHex.substr(i, 2), nullptr, 16);
-            encryptedPassword.push_back(byte);
+        if (file_username == username && file_password == mainPassword) {
+            return true;
         }
-
-        // Decrypt password
-        std::string password = decrypt(encryptedPassword, encryptionKey);
-
-        credentials.emplace_back(serviceName, username + ":" + password);
     }
+    return false;
 }
 
 } // namespace PasswordNS
