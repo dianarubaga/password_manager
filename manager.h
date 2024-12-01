@@ -32,7 +32,8 @@ namespace PasswordNS
         std::string mainPassword;
 
         void saveCredentialsToFile();
-        void compressOnExit();                                        // Compress credentials on exit
+        void compressOnExit(); // Compress credentials on exit
+        static const std::string encryptionKey; // Declare the encryption key
 
     public:
         // Rule of 3/5: Constructors, Assignment Operators, Destructor

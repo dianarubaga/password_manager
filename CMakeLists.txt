@@ -36,8 +36,9 @@ target_link_libraries(password_manager PRIVATE HuffmanLib pthread OpenSSL::SSL O
 # Enable testing
 enable_testing()
 
-# Add the test executable
-add_executable(test_password_manager manager.cpp test_password_manager.cpp)
+# Add the test executable for unit tests
+add_executable(test_password_manager test_password_manager.cpp manager.cpp encryption.cpp)
+target_include_directories(test_password_manager PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(test_password_manager PRIVATE HuffmanLib GTest::gtest_main pthread OpenSSL::SSL OpenSSL::Crypto)
 
 # Discover and run tests
