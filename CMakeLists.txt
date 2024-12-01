@@ -36,6 +36,3 @@ target_link_libraries(test_password_manager PRIVATE HuffmanLib GTest::gtest_main
 # Discover and run tests
 include(GoogleTest)
 gtest_discover_tests(test_password_manager)
-
-# Find OpenSSL
-find_package(OpenSSL REQUIRED)
