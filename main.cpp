@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <limits>
+#include <filesystem> // For checking file existence
 
 using namespace PasswordNS;
 
@@ -34,9 +35,15 @@ int main() {
 
         pm.setTestCredentials(username, mainPassword);
 
-        // Error Handling: Validate login credentials
-        if (!pm.loadUserCredentialsFromFile()) {
-            throw std::runtime_error("Invalid username or password.");
+        // Decompress database if compressed file exists
+        if (std::filesystem::exists("user_credentials.huff")) {
+            if (!pm.loadUserCredentialsFromFile()) {
+                throw std::runtime_error("Failed to decompress or load user credentials.");
+            }
+        } else {
+            if (!pm.loadUserCredentialsFromFile()) {
+                throw std::runtime_error("Invalid username or password.");
+            }
         }
 
         std::cout << "Login successful. Loading your passwords..." << std::endl;
@@ -75,7 +82,7 @@ int main() {
         std::cout << "2. Show All Passwords\n";
         std::cout << "3. Generate Password\n";
         std::cout << "4. Delete a Password\n";
-        std::cout << "5. Exit\n";
+        std::cout << "5. Exit and Compress Database\n";
         std::cout << "Choose an option: ";
 
         if (!(std::cin >> choice)) {
@@ -93,7 +100,7 @@ int main() {
                 std::getline(std::cin, serviceName);
                 std::cout << "Enter the username for this service: ";
                 std::getline(std::cin, serviceUsername);
-                std::cout << "Enter password: ";
+                std::cout << "Enter password: (must be longer than 8 char for security) ";
                 std::getline(std::cin, password);
 
                 // Error Handling: Validate non-empty input
@@ -140,7 +147,8 @@ int main() {
                 break;
             }
             case 5: // Exit
-                std::cout << "Exiting..." << std::endl;
+                std::cout << "Exiting and compressing database..." << std::endl;
+                pm.handleExit(); // Compress the database
                 break;
 
             default: // Error Handling: Out-of-range menu option

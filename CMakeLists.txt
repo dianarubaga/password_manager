@@ -17,12 +17,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Include directories for the project
 include_directories(${PROJECT_SOURCE_DIR})
 
-# Create a sources variable with a link to all cpp files to compile
-set(SOURCES
-    main.cpp
-    manager.cpp
-)
+# Add the Huffman library
+add_library(HuffmanLib Huffman-Encoding/Huffman_C/huffman.cpp)
+target_include_directories(HuffmanLib PUBLIC Huffman-Encoding/Huffman_C)
 
+<<<<<<< HEAD
 # Add an executable with the above sources
 add_executable(password_manager ${SOURCES})
 
@@ -39,11 +38,18 @@ target_link_libraries(password_manager
         OpenSSL::SSL 
         OpenSSL::Crypto
 )
+=======
+# Main executable for the password manager
+add_executable(password_manager main.cpp manager.cpp)
+target_include_directories(password_manager PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(password_manager PRIVATE HuffmanLib pthread)
+>>>>>>> origin/main
 
 # Enable testing
 enable_testing()
 
 # Add the test executable
+<<<<<<< HEAD
 add_executable(test_password_manager 
     manager.cpp
     test_password_manager.cpp
@@ -57,6 +63,10 @@ target_link_libraries(test_password_manager
         OpenSSL::SSL 
         OpenSSL::Crypto
 )
+=======
+add_executable(test_password_manager manager.cpp test_password_manager.cpp)
+target_link_libraries(test_password_manager PRIVATE HuffmanLib GTest::gtest_main pthread)
+>>>>>>> origin/main
 
 # Discover and run tests
 include(GoogleTest)

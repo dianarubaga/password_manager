@@ -1,0 +1,3 @@
+[submodule "Huffman-Encoding"]
+	path = Huffman-Encoding
+	url = https://github.com/BaptisteEtroy/Huffman-Encoding.git

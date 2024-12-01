@@ -62,7 +62,10 @@
     "fstream": "cpp",
     "random": "cpp",
     "iomanip": "cpp",
+<<<<<<< HEAD
     "algorithm": "cpp",
+=======
+>>>>>>> origin/main
     "string": "cpp"
   }
 }

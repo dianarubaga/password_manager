@@ -36,12 +36,17 @@ password_manager/
 1. **Clone or download the repository** to your local machine.
 
 
-2. **clone google test** with this command 
+2. **clone google test** with this specific command 
 ```bash
 git clone https://github.com/google/googletest.git /yourPathinyour computer/ 
 ```
 
-3. **Navigate to the project directory**:
+3.Add Huffman Encoding as a submodule:
+   ```bash
+   git submodule add https://github.com/BaptisteEtroy/Huffman-Encoding.git
+   ```
+
+4. **Navigate to the project directory**:
 
 ```bash
 cd 
@@ -93,3 +98,5 @@ git submodule add https://github.com/google/googletest.git
 ```bash
 ./test_password_manager
 ```
+
+Documentation for Huffman Compression can be found here: [![Huffman](https://img.shields.io/badge/Testing-Documentation-blue)](./huffman_compression.md)
