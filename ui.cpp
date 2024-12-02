@@ -7,6 +7,7 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include "encryption.h"
 
 namespace PasswordNS {
 

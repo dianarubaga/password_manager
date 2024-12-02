@@ -153,6 +153,11 @@ std::optional<std::string> PasswordManager::getCredential(const std::string &ser
     return std::nullopt;
 }
 
+// Get all credentials
+std::vector<std::pair<std::string, std::string>> PasswordManager::getAllCredentials() const {
+    return credentials;
+}
+
 // Generate a Random Password
 std::string PasswordManager::generatePassword(int length) {
     if (length <= 0) {

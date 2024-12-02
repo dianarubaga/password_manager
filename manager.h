@@ -63,6 +63,11 @@ namespace PasswordNS
         bool loadUserCredentialsFromFile(); // Handles decompression if necessary
         void loadCredentialsFromFile();
 
+        // Method to retrieve all credentials
+        std::vector<std::pair<std::string, std::string>> getAllCredentials() const {
+            return credentials;
+        }
+
         [[nodiscard]] std::optional<std::string> getCredential(const std::string &serviceName) const;
         bool hasPassword(const std::string &serviceName) const;
 
