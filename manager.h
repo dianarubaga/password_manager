@@ -72,6 +72,10 @@ namespace PasswordNS
         bool loadUserCredentialsFromFile(); // Handles decompression if necessary
         void loadCredentialsFromFile();
 
+        // Wrapper methods for performance testing
+        void saveCredentials() { saveCredentialsToFile(); }
+        void loadCredentials() { loadCredentialsFromFile(); }
+
         // Method to retrieve all credentials
         [[nodiscard]] std::optional<std::string> getCredential(const std::string &serviceName) const;
         bool hasPassword(const std::string &serviceName) const;
