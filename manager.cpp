@@ -120,23 +120,51 @@ void PasswordManager::showAllPasswords() {
 }
 
 // Delete a Password
-void PasswordManager::deletePassword(std::string serviceName) {
-    auto it = std::remove_if(credentials.begin(), credentials.end(),
-                             [&serviceName](const auto &entry) { return entry.first == serviceName; });
+    void PasswordManager::deletePassword(std::string serviceName) {
+        auto it = std::remove_if(credentials.begin(), credentials.end(),
+                                 [&serviceName](const auto &entry) { return entry.first == serviceName; });
 
-    if (it != credentials.end()) {
-        credentials.erase(it, credentials.end());
-        saveCredentialsToFile();
-        std::cout << "Password for service: " << serviceName << " has been deleted." << std::endl;
-    } else {
-        throw std::invalid_argument("Service not found.");
+        if (it != credentials.end()) {
+            credentials.erase(it, credentials.end());
+            saveCredentialsToFile();
+            std::cout << "Password for service: " << serviceName << " has been deleted." << std::endl;
+        } else {
+            throw std::invalid_argument("Service not found.");
+        }
     }
-}
 
-// Check if a service has a password
-bool PasswordManager::hasPassword(const std::string &serviceName) const {
-    return std::any_of(credentials.begin(), credentials.end(),
-                       [&serviceName](const auto &entry) { return entry.first == serviceName; });
+    std::vector<std::pair<std::string, std::string>> PasswordManager::getAllCredentials() const {
+        return credentials;
+    }
+
+    std::vector<std::pair<std::string, std::string>> PasswordManager::getAllDecryptedCredentials() const {
+    std::vector<std::pair<std::string, std::string>> decryptedCredentials;
+    for (const auto &entry : credentials) {
+        std::string service = entry.first;
+        std::string username_password = entry.second;
+
+        size_t delimiter_pos = username_password.find(':');
+        if (delimiter_pos != std::string::npos) {
+            std::string username = username_password.substr(0, delimiter_pos);
+            std::string passwordHex = username_password.substr(delimiter_pos + 1);
+
+            // Convert hex back to binary
+            std::vector<unsigned char> encryptedPassword;
+            for (size_t i = 0; i < passwordHex.size(); i += 2) {
+                unsigned char byte = static_cast<unsigned char>(std::stoi(passwordHex.substr(i, 2), nullptr, 16));
+                encryptedPassword.push_back(byte);
+            }
+
+            // Decrypt password
+            std::string decryptedPassword = EncryptionNS::decrypt(encryptedPassword, encryptionKey);
+
+            decryptedCredentials.emplace_back(service, username + ":" + decryptedPassword);
+        } else {
+            // Handle cases where delimiter is not found
+            decryptedCredentials.emplace_back(service, username_password);
+        }
+    }
+    return decryptedCredentials;
 }
 
 // Get a credential for a specific service
@@ -153,10 +181,6 @@ std::optional<std::string> PasswordManager::getCredential(const std::string &ser
     return std::nullopt;
 }
 
-// Get all credentials
-std::vector<std::pair<std::string, std::string>> PasswordManager::getAllCredentials() const {
-    return credentials;
-}
 
 // Generate a Random Password
 std::string PasswordManager::generatePassword(int length) {
