@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include "encryption.h"
+#include "manager.h"
 
 // Function to benchmark encryption performance
 void benchmarkEncryption(const std::string& plaintext, const std::string& key) {
@@ -34,16 +35,53 @@ void benchmarkDecryption(const std::vector<unsigned char>& ciphertext, const std
     std::cout << "Throughput: " << throughput << " MB/s\n\n";
 }
 
+// Function to benchmark password generation
+void benchmarkPasswordGeneration(PasswordNS::PasswordManager& manager, int length) {
+    auto start = std::chrono::high_resolution_clock::now();
+    std::string password = manager.generatePassword(length);
+    auto end = std::chrono::high_resolution_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    std::cout << "Password Generation Performance:\n";
+    std::cout << "Password Length: " << length << "\n";
+    std::cout << "Time Taken: " << duration << " µs\n\n";
+}
+
+// Function to benchmark file save and load operations
+void benchmarkFileOperations(PasswordNS::PasswordManager& manager) {
+    auto start = std::chrono::high_resolution_clock::now();
+    manager.saveCredentials();  // Use public wrapper method
+    auto end = std::chrono::high_resolution_clock::now();
+
+    auto save_duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    std::cout << "File Save Performance:\n";
+    std::cout << "Time Taken: " << save_duration << " µs\n\n";
+
+    start = std::chrono::high_resolution_clock::now();
+    manager.loadCredentials();  // Use public wrapper method
+    end = std::chrono::high_resolution_clock::now();
+
+    auto load_duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    std::cout << "File Load Performance:\n";
+    std::cout << "Time Taken: " << load_duration << " µs\n\n";
+}
+
 int main() {
     // Encryption key
     const std::string key = "0123456789abcdef0123456789abcdef";
 
-    // Test input sizes
+    // Test input sizes for encryption/decryption
     std::vector<int> inputSizes = {256, 1024, 1048576}; // 256 bytes, 1 KB, 1 MB
+    PasswordNS::PasswordManager manager;
+
+    // Set up test data for file operations
+    manager.setTestCredentials("test_user", "secure_password");
+    for (int i = 0; i < 100; ++i) {
+        manager.addNewPassword("service" + std::to_string(i), "user" + std::to_string(i), "password" + std::to_string(i));
+    }
 
     for (int size : inputSizes) {
-        // Generate test data
-        const std::string plaintext(size, 'A'); // Repeat 'A' for specified size
+        const std::string plaintext(size, 'A'); // Generate test plaintext
         std::cout << "Testing with input size: " << size << " bytes\n";
 
         // Benchmark encryption
@@ -57,6 +95,15 @@ int main() {
 
         std::cout << "--------------------------------------\n";
     }
+
+    // Test password generation for different lengths
+    std::vector<int> lengths = {8, 16, 32, 64};
+    for (int length : lengths) {
+        benchmarkPasswordGeneration(manager, length);
+    }
+
+    // Benchmark file save and load operations
+    benchmarkFileOperations(manager);
 
     return 0;
 }
