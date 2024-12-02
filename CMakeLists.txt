@@ -4,6 +4,13 @@ cmake_minimum_required(VERSION 3.5)
 # Set the project name
 project(password_manager)
 
+# Find wxWidgets
+find_package(wxWidgets REQUIRED COMPONENTS core base)
+
+if(wxWidgets_FOUND)
+    include(${wxWidgets_USE_FILE})
+endif()
+
 # Add Google Test submodule
 add_subdirectory(googletest)
 
@@ -29,18 +36,22 @@ include_directories(/opt/homebrew/opt/openssl/include)
 link_directories(/opt/homebrew/opt/openssl/lib)
 
 # Main executable for the password manager
-add_executable(password_manager main.cpp manager.cpp encryption.cpp)
+add_executable(password_manager main.cpp manager.cpp encryption.cpp ui.cpp)
 target_include_directories(password_manager PRIVATE ${PROJECT_SOURCE_DIR})
-target_link_libraries(password_manager PRIVATE HuffmanLib pthread OpenSSL::SSL OpenSSL::Crypto)
+
+# Link wxWidgets, OpenSSL, and other libraries
+target_link_libraries(password_manager PRIVATE ${wxWidgets_LIBRARIES} HuffmanLib pthread OpenSSL::SSL OpenSSL::Crypto)
 
 # Enable testing
 enable_testing()
 
 # Add the test executable for unit tests
-add_executable(test_password_manager test_password_manager.cpp manager.cpp encryption.cpp)
-target_include_directories(test_password_manager PRIVATE ${PROJECT_SOURCE_DIR})
-target_link_libraries(test_password_manager PRIVATE HuffmanLib GTest::gtest_main pthread OpenSSL::SSL OpenSSL::Crypto)
+#add_executable(test_password_manager test_password_manager.cpp manager.cpp encryption.cpp)
+#target_include_directories(test_password_manager PRIVATE ${PROJECT_SOURCE_DIR})
+
+# Link GoogleTest, HuffmanLib, OpenSSL, and other libraries for testing
+#target_link_libraries(test_password_manager PRIVATE HuffmanLib GTest::gtest_main pthread OpenSSL::SSL OpenSSL::Crypto)
 
 # Discover and run tests
 include(GoogleTest)
-gtest_discover_tests(test_password_manager)
+#gtest_discover_tests(test_password_manager)

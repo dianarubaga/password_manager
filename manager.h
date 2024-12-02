@@ -24,7 +24,7 @@ namespace PasswordNS
     };
 
     // Derived class for managing passwords
-    class PasswordManager : public BaseManager
+    class PasswordManager : public BaseManager 
     {
     private:
         std::vector<std::pair<std::string, std::string>> credentials; // Container for credentials (service, password)
@@ -43,6 +43,9 @@ namespace PasswordNS
         PasswordManager &operator=(const PasswordManager &other);
         PasswordManager &operator=(PasswordManager &&other) noexcept;
         ~PasswordManager() noexcept override;
+
+        std::vector<std::pair<std::string, std::string>> getAllCredentials() const;
+        std::vector<std::pair<std::string, std::string>> getAllDecryptedCredentials() const;
 
         // Pure virtual function overrides
         void encrypt(const std::string &data) const override;      // Encryption implementation
@@ -63,6 +66,7 @@ namespace PasswordNS
         bool loadUserCredentialsFromFile(); // Handles decompression if necessary
         void loadCredentialsFromFile();
 
+        // Method to retrieve all credentials
         [[nodiscard]] std::optional<std::string> getCredential(const std::string &serviceName) const;
         bool hasPassword(const std::string &serviceName) const;
 
