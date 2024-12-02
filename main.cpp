@@ -63,7 +63,6 @@ int main() {
             throw std::invalid_argument("Password is too weak. Must be longer than 8 characters.");
         }
 
-        pm.encrypt(mainPassword);
         pm.saveUserCredentialsToFile();
         std::cout << "Account successfully created! You can now use the password manager." << std::endl;
 
