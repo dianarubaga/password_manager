@@ -1,5 +1,5 @@
 # Specify the minimum CMake version
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
 # Set the project name
 project(password_manager)
