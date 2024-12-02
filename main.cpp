@@ -1,7 +1,9 @@
 #include "manager.h"
+#include <wx/wx.h>
 #include <iostream>
 #include <stdexcept>
 #include <limits>
+#include <filesystem>
 
 using namespace PasswordNS;
 
@@ -172,5 +174,6 @@ int main(int argc, char** argv) {
         }
     } while (choice != 5);
 
-    return 0;
+    // Start wxWidgets UI after CLI menu
+    return wxEntry(argc, argv);
 }
