@@ -45,13 +45,20 @@ target_link_libraries(password_manager PRIVATE ${wxWidgets_LIBRARIES} HuffmanLib
 # Enable testing
 enable_testing()
 
+# Add the test executable for performance metrics
+add_executable(performance_metrics performance_metrics.cpp encryption.cpp)
+target_include_directories(performance_metrics PRIVATE ${PROJECT_SOURCE_DIR})
+
+# Link OpenSSL and other libraries for performance testing
+target_link_libraries(performance_metrics PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+
 # Add the test executable for unit tests
 add_executable(test_password_manager test_password_manager.cpp manager.cpp encryption.cpp)
 target_include_directories(test_password_manager PRIVATE ${PROJECT_SOURCE_DIR})
 
-# Link GoogleTest, HuffmanLib, OpenSSL, and other libraries for testing
+# Link GoogleTest, HuffmanLib, OpenSSL, and other libraries for unit testing
 target_link_libraries(test_password_manager PRIVATE HuffmanLib GTest::gtest_main pthread OpenSSL::SSL OpenSSL::Crypto)
 
 # Discover and run tests
 include(GoogleTest)
-#gtest_discover_tests(test_password_manager)
+gtest_discover_tests(test_password_manager)
