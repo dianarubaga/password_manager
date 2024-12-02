@@ -11,11 +11,8 @@ if(wxWidgets_FOUND)
     include(${wxWidgets_USE_FILE})
 endif()
 
-# Add Google Test submodule
-add_subdirectory(googletest)
-
-# Include Google Test headers
-include_directories(googletest/include)
+# Find GoogleTest
+find_package(GTest REQUIRED)
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -50,8 +47,7 @@ add_executable(test_password_manager test_password_manager.cpp manager.cpp encry
 target_include_directories(test_password_manager PRIVATE ${PROJECT_SOURCE_DIR})
 
 # Link GoogleTest, HuffmanLib, OpenSSL, and other libraries for testing
-target_link_libraries(test_password_manager PRIVATE HuffmanLib GTest::gtest_main pthread OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(test_password_manager PRIVATE GTest::GTest GTest::Main HuffmanLib pthread OpenSSL::SSL OpenSSL::Crypto)
 
-# Discover and run tests
-include(GoogleTest)
-#gtest_discover_tests(test_password_manager)
+# Manually add tests
+add_test(NAME PasswordManagerTest COMMAND test_password_manager)
