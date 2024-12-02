@@ -46,31 +46,9 @@ PasswordManager::~PasswordManager() noexcept {
 }
 
 // Password Validation
-    bool PasswordManager::validate(const std::string &password) const {
-        if (password.length() < 12) {
-            std::cout << "Password must be at least 12 characters long." << std::endl;
-            return false;
-        }
-        
-        if (!std::any_of(password.begin(), password.end(), ::isupper)) {
-            std::cout << "Password must contain at least one uppercase letter." << std::endl;
-            return false;
-        }
-        
-        if (!std::any_of(password.begin(), password.end(), ::isdigit)) {
-            std::cout << "Password must contain at least one number." << std::endl;
-            return false;
-        }
-        
-        if (!std::any_of(password.begin(), password.end(), [](char c) {
-            return std::ispunct(c);
-        })) {
-            std::cout << "Password must contain at least one special character." << std::endl;
-            return false;
-        }
-        
-        return true;
-    }
+bool PasswordManager::validate(const std::string &password) const {
+    return password.length() > 8;
+}
 
 // Encrypt Functionality
 void PasswordManager::encrypt(const std::string &data) const {
@@ -142,24 +120,36 @@ void PasswordManager::showAllPasswords() {
 }
 
 // Delete a Password
-    void PasswordManager::deletePassword(std::string serviceName) {
-        auto it = std::remove_if(credentials.begin(), credentials.end(),
-                                 [&serviceName](const auto &entry) { return entry.first == serviceName; });
+void PasswordManager::deletePassword(std::string serviceName) {
+    auto it = std::remove_if(credentials.begin(), credentials.end(),
+                             [&serviceName](const auto &entry) { return entry.first == serviceName; });
 
-        if (it != credentials.end()) {
-            credentials.erase(it, credentials.end());
-            saveCredentialsToFile();
-            std::cout << "Password for service: " << serviceName << " has been deleted." << std::endl;
-        } else {
-            throw std::invalid_argument("Service not found.");
+    if (it != credentials.end()) {
+        credentials.erase(it, credentials.end());
+        saveCredentialsToFile();
+        std::cout << "Password for service: " << serviceName << " has been deleted." << std::endl;
+    } else {
+        throw std::invalid_argument("Service not found.");
+    }
+}
+
+// Check if a password exists for a service
+bool PasswordManager::hasPassword(const std::string &serviceName) const {
+    for (const auto &entry : credentials) {
+        if (entry.first == serviceName) {
+            return true;
         }
     }
+    return false;
+}
 
-    std::vector<std::pair<std::string, std::string>> PasswordManager::getAllCredentials() const {
-        return credentials;
-    }
+// Retrieve all stored credentials
+std::vector<std::pair<std::string, std::string>> PasswordManager::getAllCredentials() const {
+    return credentials;
+}
 
-    std::vector<std::pair<std::string, std::string>> PasswordManager::getAllDecryptedCredentials() const {
+// Retrieve all decrypted credentials
+std::vector<std::pair<std::string, std::string>> PasswordManager::getAllDecryptedCredentials() const {
     std::vector<std::pair<std::string, std::string>> decryptedCredentials;
     for (const auto &entry : credentials) {
         std::string service = entry.first;
@@ -189,7 +179,7 @@ void PasswordManager::showAllPasswords() {
     return decryptedCredentials;
 }
 
-// Get a credential for a specific service
+// Retrieve a credential for a specific service
 std::optional<std::string> PasswordManager::getCredential(const std::string &serviceName) const {
     for (const auto &entry : credentials) {
         if (entry.first == serviceName) {
@@ -202,7 +192,6 @@ std::optional<std::string> PasswordManager::getCredential(const std::string &ser
     }
     return std::nullopt;
 }
-
 
 // Generate a Random Password
 std::string PasswordManager::generatePassword(int length) {
@@ -286,7 +275,6 @@ bool PasswordManager::loadUserCredentialsFromFile() {
             return true;
         }
     }
-
     return false;
 }
 
