@@ -2,10 +2,30 @@
 #include <iostream>
 #include <stdexcept>
 #include <limits>
+#include <wx/wx.h>
+#include "ui.h"
 
 using namespace PasswordNS;
 
-int main() {
+class MyApp : public wxApp {
+public:
+    virtual bool OnInit() {
+        // Initialize wxWidgets app
+        std::cout << "Starting wxWidgets Password Manager UI...\n";
+        return true;
+    }
+};
+
+wxIMPLEMENT_APP_NO_MAIN(MyApp);
+
+int main(int argc, char** argv) {
+    // Initialize wxWidgets
+    wxInitializer initializer;
+    if (!initializer) {
+        std::cerr << "Failed to initialize wxWidgets." << std::endl;
+        return -1;
+    }
+
     PasswordManager pm;
 
     // Main Menu
@@ -142,6 +162,7 @@ int main() {
             }
             case 5: // Exit
                 std::cout << "Exiting..." << std::endl;
+                wxEntry(argc, argv); // Start wxWidgets
                 break;
 
             default: // Error Handling: Out-of-range menu option
