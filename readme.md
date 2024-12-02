@@ -104,7 +104,6 @@ Documentation for Huffman Compression can be found here: [![Huffman](https://img
 
 ## Setting Up code coverage after running tests 
 
-
 ### 1. make the code coverage 
 
 ```bash
@@ -115,5 +114,19 @@ Documentation for Huffman Compression can be found here: [![Huffman](https://img
 ```bash
 open coverage_report/index.html
 ```
+
+## Setting up the Memory scanning
+
+### 2. Use the `leaks` Tool to Analyze Memory
+
+Use the `pgrep` command to find the process ID of the `password_manager` and pass it to the `leaks` tool:
+
+```bash
+leaks $(pgrep password_manager)
+```
+This command will:
+- Locate the password_manager process using pgrep.
+- Run the leaks utility to analyze the memory usage of the process.
+
 
 Documentation for Huffman Compression can be found here: [![Huffman](https://img.shields.io/badge/Testing-Documentation-blue)](./huffman_compression.md)
