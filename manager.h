@@ -8,7 +8,7 @@
 #include <utility>
 #include <optional> // For std::optional
 #include <memory>
-#include <filesystem> // For file system operations
+#include <filesystem>                           // For file system operations
 #include "Huffman-Encoding/Huffman_C/huffman.h" // Include Huffman Encoding library
 
 namespace PasswordNS
@@ -24,7 +24,7 @@ namespace PasswordNS
     };
 
     // Derived class for managing passwords
-    class PasswordManager : public BaseManager 
+    class PasswordManager : public BaseManager
     {
     private:
         std::vector<std::pair<std::string, std::string>> credentials; // Container for credentials (service, password)
@@ -32,7 +32,7 @@ namespace PasswordNS
         std::string mainPassword;
 
         void saveCredentialsToFile();
-        void compressOnExit(); // Compress credentials on exit
+        void compressOnExit();                  // Compress credentials on exit
         static const std::string encryptionKey; // Declare the encryption key
 
     public:
@@ -56,6 +56,12 @@ namespace PasswordNS
         const std::string &getUsername() const { return username; }
         void setMainPassword(const std::string &password) { mainPassword = password; }
         const std::string &getMainPassword() const { return mainPassword; }
+
+        // Static public getter for the encryption key
+        static const std::string &getEncryptionKey()
+        {
+            return encryptionKey;
+        }
 
         void addNewPassword(std::string serviceName, std::string serviceUsername, std::string password);
         void showAllPasswords();
