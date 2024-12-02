@@ -100,3 +100,20 @@ git submodule add https://github.com/google/googletest.git
 ```
 
 Documentation for Huffman Compression can be found here: [![Huffman](https://img.shields.io/badge/Testing-Documentation-blue)](./huffman_compression.md)
+
+
+## Setting Up code coverage after running tests 
+
+
+### 1. make the code coverage 
+
+```bash
+ make coverage  
+```
+### 2. open the code coverage online 
+
+```bash
+open coverage_report/index.html
+```
+
+Documentation for Huffman Compression can be found here: [![Huffman](https://img.shields.io/badge/Testing-Documentation-blue)](./huffman_compression.md)

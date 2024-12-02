@@ -96,5 +96,79 @@ namespace
         EXPECT_EQ(credentials[0].first, "email");
         EXPECT_EQ(credentials[1].first, "social");
     }
+    TEST(PasswordManagerTestSuite, AddEmptyPassword)    
+    {
+        PasswordManager pm;
+        pm.setTestCredentials("testUser", "testPassword");
+    
+        // Adding an entry with an empty password
+        EXPECT_THROW(pm.addNewPassword("service", "username", ""), std::invalid_argument);
+
+        // Adding an entry with an empty username
+        EXPECT_THROW(pm.addNewPassword("service", "", "password"), std::invalid_argument);
+
+        // Adding an entry with an empty service name
+        EXPECT_THROW(pm.addNewPassword("", "username", "password"), std::invalid_argument);
+    }
+    TEST(PasswordManagerTestSuite, AddMaxLengthPassword)
+    {
+        PasswordManager pm;
+        pm.setTestCredentials("testUser", "testPassword");
+
+        std::string maxServiceName(255, 'a');  // 255 'a's
+        std::string maxUsername(255, 'b');    // 255 'b's
+        std::string maxPassword(255, 'c');    // 255 'c's
+
+        pm.addNewPassword(maxServiceName, maxUsername, maxPassword);
+        
+        auto credentials = pm.getCredential(maxServiceName);
+        EXPECT_TRUE(credentials.has_value());
+
+        auto encryptedPasswordHex = credentials.value();
+        std::vector<unsigned char> encryptedPassword;
+        for (size_t i = 0; i < encryptedPasswordHex.size(); i += 2)
+        {
+            encryptedPassword.push_back(static_cast<unsigned char>(std::stoi(encryptedPasswordHex.substr(i, 2), nullptr, 16)));
+        }
+        auto decryptedPassword = EncryptionNS::decrypt(encryptedPassword, PasswordManager::getEncryptionKey());
+
+        EXPECT_EQ(decryptedPassword, maxPassword);
+    }
+    // Test case for handling missing credentials
+    TEST(PasswordManagerTestSuite, GetNonExistentCredential)
+    {
+        PasswordManager pm;
+        pm.setTestCredentials("testUser", "testPassword");
+
+        // Attempting to get a credential that doesn't exist
+        auto credential = pm.getCredential("nonExistentService");
+        EXPECT_FALSE(credential.has_value());
+    }
+    TEST(PasswordManagerTestSuite, HasPasswordBranching)
+{
+    PasswordManager pm;
+    pm.setTestCredentials("testUser", "testPassword");
+
+    // Branch where the password does not exist
+    EXPECT_FALSE(pm.hasPassword("nonExistentService"));
+
+    // Add a password and test the branch where the password exists
+    pm.addNewPassword("email", "user@example.com", "password123");
+    EXPECT_TRUE(pm.hasPassword("email"));
+}
+
+TEST(PasswordManagerTestSuite, RetrieveCredentialsBranching)
+{
+    PasswordManager pm;
+    pm.setTestCredentials("testUser", "testPassword");
+
+    // Branch where credentials do not exist
+    EXPECT_FALSE(pm.getCredential("nonExistent").has_value());
+
+    // Branch where credentials exist
+    pm.addNewPassword("email", "user@example.com", "password123");
+    EXPECT_TRUE(pm.getCredential("email").has_value());
+}
+
 
 } // namespace
