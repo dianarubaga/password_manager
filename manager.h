@@ -7,7 +7,7 @@
 #include <vector>
 #include <utility>
 #include <optional> // For std::optional
-#include <memory>
+#include <memory>   // For smart pointers
 #include <filesystem>                           // For file system operations
 #include "Huffman-Encoding/Huffman_C/huffman.h" // Include Huffman Encoding library
 
@@ -20,7 +20,7 @@ namespace PasswordNS
     public:
         virtual void encrypt(const std::string &data) const = 0;      // Pure virtual function for encryption
         virtual bool validate(const std::string &password) const = 0; // Pure virtual function for validation
-        virtual ~BaseManager() noexcept = default;                    // Virtual destructor
+        virtual ~BaseManager() noexcept = default;                    // Virtual destructor for safe cleanup
     };
 
     // Derived class for managing passwords
@@ -34,6 +34,23 @@ namespace PasswordNS
         void saveCredentialsToFile();
         void compressOnExit();                  // Compress credentials on exit
         static const std::string encryptionKey; // Declare the encryption key
+
+        // Memory Handling with RAII for File Streams
+        std::unique_ptr<std::ifstream> createInputStream(const std::string &fileName) const {
+            auto file = std::make_unique<std::ifstream>(fileName, std::ios::in);
+            if (!file->is_open()) {
+                throw std::ios_base::failure("Unable to open file: " + fileName);
+            }
+            return file;
+        }
+
+        std::unique_ptr<std::ofstream> createOutputStream(const std::string &fileName) const {
+            auto file = std::make_unique<std::ofstream>(fileName, std::ios::out | std::ios::trunc);
+            if (!file->is_open()) {
+                throw std::ios_base::failure("Unable to open file: " + fileName);
+            }
+            return file;
+        }
 
     public:
         // Rule of 3/5: Constructors, Assignment Operators, Destructor
