@@ -8,6 +8,8 @@
 #include <utility>
 #include <optional> // For std::optional
 #include <memory>
+#include <filesystem> // For file system operations
+#include "Huffman-Encoding/Huffman_C/huffman.h" // Include Huffman Encoding library
 
 namespace PasswordNS
 {
@@ -30,7 +32,8 @@ namespace PasswordNS
         std::string mainPassword;
 
         void saveCredentialsToFile();
-        inline static const std::string encryptionKey = "MySecretKey"; // Inline static member (C++17)
+        void compressOnExit(); // Compress credentials on exit
+        static const std::string encryptionKey; // Declare the encryption key
 
     public:
         // Rule of 3/5: Constructors, Assignment Operators, Destructor
@@ -57,7 +60,7 @@ namespace PasswordNS
         std::string generatePassword(int length);
         void useGeneratedPasswordForNewEntry(const std::string &generatedPassword);
         void saveUserCredentialsToFile();
-        bool loadUserCredentialsFromFile();
+        bool loadUserCredentialsFromFile(); // Handles decompression if necessary
         void loadCredentialsFromFile();
 
         [[nodiscard]] std::optional<std::string> getCredential(const std::string &serviceName) const;
@@ -66,6 +69,9 @@ namespace PasswordNS
         void setTestCredentials(const std::string &testUsername, const std::string &testPassword);
 
         inline size_t getPasswordCount() const { return credentials.size(); }
+
+        // Handles user exit and compresses data
+        void handleExit();
     };
 
 } // namespace PasswordNS

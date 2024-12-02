@@ -17,35 +17,29 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Include directories for the project
 include_directories(${PROJECT_SOURCE_DIR})
 
-# Create a sources variable with a link to all cpp files to compile
-set(SOURCES
-    main.cpp
-    manager.cpp
-)
+# Add the Huffman library
+add_library(HuffmanLib Huffman-Encoding/Huffman_C/huffman.cpp)
+target_include_directories(HuffmanLib PUBLIC Huffman-Encoding/Huffman_C)
 
-# Add an executable with the above sources
-add_executable(password_manager ${SOURCES})
+# Find OpenSSL
+find_package(OpenSSL REQUIRED)
 
-# Set the directories that should be included in the build command for this target
-target_include_directories(password_manager
-    PRIVATE 
-        ${PROJECT_SOURCE_DIR}
-)
+# Include OpenSSL directories (adjust the path if necessary)
+include_directories(/opt/homebrew/opt/openssl/include)
+link_directories(/opt/homebrew/opt/openssl/lib)
 
-# Link libraries (add any additional libraries if needed)
-target_link_libraries(password_manager PRIVATE pthread)
+# Main executable for the password manager
+add_executable(password_manager main.cpp manager.cpp encryption.cpp)
+target_include_directories(password_manager PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(password_manager PRIVATE HuffmanLib pthread OpenSSL::SSL OpenSSL::Crypto)
 
 # Enable testing
 enable_testing()
 
-# Add the test executable
-add_executable(test_password_manager 
-    manager.cpp
-    test_password_manager.cpp
-)
-
-# Link the Google Test libraries to your test executable
-target_link_libraries(test_password_manager GTest::gtest_main pthread)
+# Add the test executable for unit tests
+add_executable(test_password_manager test_password_manager.cpp manager.cpp encryption.cpp)
+target_include_directories(test_password_manager PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(test_password_manager PRIVATE HuffmanLib GTest::gtest_main pthread OpenSSL::SSL OpenSSL::Crypto)
 
 # Discover and run tests
 include(GoogleTest)
