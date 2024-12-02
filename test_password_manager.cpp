@@ -246,5 +246,89 @@ TEST(PasswordManagerBranchTestSuite, GetCredential_ExistingService) {
     auto credential = pm.getCredential("service4");
     EXPECT_TRUE(credential.has_value());
 }
+// Test: Branch coverage for `addNewPassword`
+TEST(PasswordManagerBranchCoverage, AddNewPasswordBranches) {
+    PasswordManager pm;
+    pm.setTestCredentials("testUser", "testPassword");
+
+    // Branch: Weak password
+    EXPECT_THROW(pm.addNewPassword("service", "username", "short"), std::invalid_argument);
+
+    // Branch: Valid password
+    EXPECT_NO_THROW(pm.addNewPassword("email", "user@example.com", "StrongPassword123!"));
+    EXPECT_TRUE(pm.hasPassword("email"));
+}
+
+
+// Test: Load Credentials From File Branches
+TEST(PasswordManagerBranchCoverage, LoadCredentialsFromFileBranches) {
+    PasswordManager pm;
+    pm.setTestCredentials("testUser", "testPassword");
+
+    // Branch: File does not exist
+    std::remove("testUser_passwords.dat"); // Ensure file does not exist
+    EXPECT_THROW(pm.loadCredentialsFromFile(), std::ios_base::failure);
+
+    // Branch: File exists
+    std::ofstream file("testUser_passwords.dat");
+    file << "service username:encryptedPassword\n";
+    file.close();
+    EXPECT_NO_THROW(pm.loadCredentialsFromFile());
+
+    // Cleanup
+    std::remove("testUser_passwords.dat");
+}
+
+// Test: Validate Branches
+TEST(PasswordManagerBranchCoverage, ValidateBranches) {
+    PasswordManager pm;
+
+    // Branch: Weak password
+    EXPECT_FALSE(pm.validate("short"));
+
+    // Branch: Strong password
+    EXPECT_TRUE(pm.validate("StrongPassword123!"));
+}
+// Test: Load User Credentials Branches
+TEST(PasswordManagerBranchCoverage, LoadUserCredentialsBranches) {
+    PasswordManager pm;
+    pm.setTestCredentials("testUser", "testPassword");
+
+    // Branch: File does not exist
+    std::remove("user_credentials.csv"); // Ensure file does not exist
+    EXPECT_FALSE(pm.loadUserCredentialsFromFile());
+
+    // Branch: File exists and credentials match
+    std::ofstream file("user_credentials.csv");
+    file << "testUser,testPassword\n";
+    file.close();
+    EXPECT_TRUE(pm.loadUserCredentialsFromFile());
+
+    // Branch: File exists but credentials do not match
+    pm.setTestCredentials("testUser", "wrongPassword");
+    EXPECT_FALSE(pm.loadUserCredentialsFromFile());
+}
+// Test: Generate Password Branches
+TEST(PasswordManagerBranchCoverage, GeneratePasswordBranches) {
+    PasswordManager pm;
+
+    // Branch: Valid length
+    EXPECT_NO_THROW(pm.generatePassword(10));
+
+    // Branch: Invalid length
+    EXPECT_THROW(pm.generatePassword(0), std::invalid_argument);
+}
+// Test: Has Password Branches
+TEST(PasswordManagerBranchCoverage, HasPasswordBranches) {
+    PasswordManager pm;
+    pm.setTestCredentials("testUser", "testPassword");
+
+    // Branch: Password does not exist
+    EXPECT_FALSE(pm.hasPassword("nonExistentService"));
+
+    // Branch: Password exists
+    pm.addNewPassword("service", "user", "ValidPassword123");
+    EXPECT_TRUE(pm.hasPassword("service"));
+}
 
 } // namespace
