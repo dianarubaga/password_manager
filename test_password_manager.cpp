@@ -212,5 +212,39 @@ TEST(PasswordManagerTestSuite, GetCredentialBranchCoverage)
     EXPECT_TRUE(pm.getCredential("email").has_value());
 }
 
+TEST(PasswordManagerTestSuite, LoadCredentialsFileNotFound) {
+    PasswordManager pm;
+    pm.setTestCredentials("testUser", "testPassword");
+
+    // Ensure the file does not exist
+    remove("user_credentials.csv");
+
+    // Attempt to load credentials
+    EXPECT_FALSE(pm.loadUserCredentialsFromFile());
+}
+
+TEST(PasswordManagerTestSuite, GeneratePasswordBranching) {
+    PasswordManager pm;
+
+    // Valid length
+    EXPECT_NO_THROW(pm.generatePassword(12));
+
+    // Invalid length
+    EXPECT_THROW(pm.generatePassword(0), std::invalid_argument);
+}
+
+TEST(PasswordManagerBranchTestSuite, GeneratePassword_ValidLength) {
+    PasswordManager pm;
+    auto password = pm.generatePassword(12);
+    EXPECT_EQ(password.length(), 12);
+}
+TEST(PasswordManagerBranchTestSuite, GetCredential_ExistingService) {
+    PasswordManager pm;
+    pm.setTestCredentials("testUser", "testPassword");
+
+    pm.addNewPassword("service4", "username4", "ValidPassword123");
+    auto credential = pm.getCredential("service4");
+    EXPECT_TRUE(credential.has_value());
+}
 
 } // namespace
