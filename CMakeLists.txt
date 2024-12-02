@@ -73,6 +73,8 @@ add_custom_target(coverage
     COMMENT "Generating code coverage report"
 )
 
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
 
 # Add tests to CTest
 add_test(NAME PasswordManagerTests COMMAND test_password_manager)
