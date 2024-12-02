@@ -1,6 +1,6 @@
 // main.cpp
 #include <wx/wx.h>
-#include "ui.h"
+#include "../include/ui.h"
 
 int main(int argc, char** argv) {
     // Initialize wxWidgets

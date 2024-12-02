@@ -33,7 +33,7 @@ include_directories(/opt/homebrew/opt/openssl/include)
 link_directories(/opt/homebrew/opt/openssl/lib)
 
 # Main executable for the password manager
-add_executable(password_manager main.cpp manager.cpp encryption.cpp ui.cpp)
+add_executable(password_manager src/main.cpp src/manager.cpp src/encryption.cpp src/ui.cpp)
 target_include_directories(password_manager PRIVATE ${PROJECT_SOURCE_DIR})
 
 # Link wxWidgets, OpenSSL, and other libraries
@@ -43,7 +43,7 @@ target_link_libraries(password_manager PRIVATE ${wxWidgets_LIBRARIES} HuffmanLib
 enable_testing()
 
 # Add the test executable for unit tests
-add_executable(test_password_manager test_password_manager.cpp manager.cpp encryption.cpp)
+add_executable(test_password_manager test/test_password_manager.cpp src/manager.cpp src/encryption.cpp)
 target_include_directories(test_password_manager PRIVATE ${PROJECT_SOURCE_DIR})
 
 # Link GoogleTest, HuffmanLib, OpenSSL, and other libraries for testing

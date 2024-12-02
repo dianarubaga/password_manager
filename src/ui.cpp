@@ -1,5 +1,5 @@
 // ui.cpp
-#include "ui.h"
+#include "../include/ui.h"
 #include <wx/msgdlg.h>
 #include <wx/textctrl.h>
 #include <wx/valtext.h>
