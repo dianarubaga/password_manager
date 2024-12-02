@@ -7,7 +7,6 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
-#include "encryption.h"
 
 namespace PasswordNS {
 
@@ -372,20 +371,7 @@ void MainMenuFrame::OnRetrievePassword(wxCommandEvent& event) {
         try {
             auto credential = passwordManager.getCredential(std::string(service.mb_str()));
             if (credential.has_value()) {
-                // Decrypt the password before displaying
-                std::string passwordHex = credential.value();
-                std::vector<unsigned char> encryptedPassword;
-
-                // Convert hex to binary
-                for (size_t i = 0; i < passwordHex.size(); i += 2) {
-                    unsigned char byte = static_cast<unsigned char>(std::stoi(passwordHex.substr(i, 2), nullptr, 16));
-                    encryptedPassword.push_back(byte);
-                }
-
-                // Decrypt password
-                std::string decryptedPassword = EncryptionNS::decrypt(encryptedPassword, passwordManager.encryptionKey);
-
-                retrievedCtrl->SetValue(decryptedPassword);
+                retrievedCtrl->SetValue(credential.value());
                 wxMessageBox("Password retrieved successfully.", "Info", wxOK | wxICON_INFORMATION);
             }
             else {
@@ -453,9 +439,9 @@ void MainMenuFrame::OnViewAllPasswords(wxCommandEvent& event) {
     wxTextCtrl* passwordsCtrl = new wxTextCtrl(panel, wxID_ANY, "", wxDefaultPosition, wxSize(580, 340), wxTE_MULTILINE | wxTE_READONLY);
     
     std::ostringstream oss;
-    std::vector<std::pair<std::string, std::string>> decryptedCredentials = passwordManager.getAllDecryptedCredentials(); // Using the decrypted credentials
+    std::vector<std::pair<std::string, std::string>> credentials = passwordManager.getAllDecryptedCredentials(); // Assuming you have a method to get all credentials
 
-    if (decryptedCredentials.empty()) {
+    if (credentials.empty()) {
         oss << "No passwords stored.\n";
     }
     else {
@@ -463,7 +449,7 @@ void MainMenuFrame::OnViewAllPasswords(wxCommandEvent& event) {
             << std::setw(20) << "Username"
             << "Password\n";
         oss << "------------------------------------------------------------\n";
-        for (const auto& entry : decryptedCredentials) {
+        for (const auto& entry : credentials) {
             std::string service = entry.first;
             std::string username_password = entry.second;
 
@@ -476,20 +462,6 @@ void MainMenuFrame::OnViewAllPasswords(wxCommandEvent& event) {
                 << password << "\n";
         }
     }
-
-    passwordsCtrl->SetValue(oss.str());
-
-    vbox->Add(passwordsCtrl, 1, wxEXPAND | wxALL, 10);
-
-    // Close Button
-    wxButton* closeButton = new wxButton(panel, wxID_OK, wxT("Close"));
-    vbox->Add(closeButton, 0, wxALIGN_CENTER | wxTOP | wxBOTTOM, 10);
-
-    panel->SetSizer(vbox);
-
-    dialog->ShowModal();
-    dialog->Destroy();
-}
 
     passwordsCtrl->SetValue(oss.str());
 
