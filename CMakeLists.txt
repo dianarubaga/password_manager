@@ -21,6 +21,14 @@ include_directories(googletest/include)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Add coverage compile flags (only for GCC/Clang compilers)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -g -O0")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage -g -O0")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
+endif()
+
+
 # Include directories for the project
 include_directories(${PROJECT_SOURCE_DIR})
 
@@ -52,6 +60,20 @@ target_include_directories(test_password_manager PRIVATE ${PROJECT_SOURCE_DIR})
 # Link Google Test, HuffmanLib, and OpenSSL libraries
 target_link_libraries(test_password_manager PRIVATE gtest gtest_main HuffmanLib OpenSSL::SSL OpenSSL::Crypto pthread)
 
+# Discover and run tests
+include(GoogleTest)
+gtest_discover_tests(test_password_manager)
+
+# Add a custom target for code coverage
+add_custom_target(coverage
+    COMMAND lcov --capture --directory . --output-file coverage.info --rc lcov_branch_coverage=1 --ignore-errors inconsistent
+    COMMAND lcov --remove coverage.info '/usr/*' '*/googletest/*' '*/password_manager/Huffman-Encoding/Huffman_C/*' --output-file filtered_coverage.info --rc lcov_branch_coverage=1 --ignore-errors inconsistent
+    COMMAND genhtml filtered_coverage.info --output-directory coverage_report --branch-coverage --ignore-errors inconsistent,category
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Generating code coverage report"
+)
+
+
 # Add tests to CTest
 add_test(NAME PasswordManagerTests COMMAND test_password_manager)
 
@@ -61,3 +83,4 @@ target_include_directories(performance_metrics PRIVATE ${PROJECT_SOURCE_DIR})
 
 # Link required libraries for performance metrics
 target_link_libraries(performance_metrics PRIVATE HuffmanLib pthread OpenSSL::SSL OpenSSL::Crypto)
+
