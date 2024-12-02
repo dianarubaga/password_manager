@@ -46,9 +46,31 @@ PasswordManager::~PasswordManager() noexcept {
 }
 
 // Password Validation
-bool PasswordManager::validate(const std::string &password) const {
-    return password.length() > 8;
-}
+    bool PasswordManager::validate(const std::string &password) const {
+        if (password.length() < 12) {
+            std::cout << "Password must be at least 12 characters long." << std::endl;
+            return false;
+        }
+        
+        if (!std::any_of(password.begin(), password.end(), ::isupper)) {
+            std::cout << "Password must contain at least one uppercase letter." << std::endl;
+            return false;
+        }
+        
+        if (!std::any_of(password.begin(), password.end(), ::isdigit)) {
+            std::cout << "Password must contain at least one number." << std::endl;
+            return false;
+        }
+        
+        if (!std::any_of(password.begin(), password.end(), [](char c) {
+            return std::ispunct(c);
+        })) {
+            std::cout << "Password must contain at least one special character." << std::endl;
+            return false;
+        }
+        
+        return true;
+    }
 
 // Encrypt Functionality
 void PasswordManager::encrypt(const std::string &data) const {
