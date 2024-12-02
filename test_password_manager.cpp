@@ -169,6 +169,48 @@ TEST(PasswordManagerTestSuite, RetrieveCredentialsBranching)
     pm.addNewPassword("email", "user@example.com", "password123");
     EXPECT_TRUE(pm.getCredential("email").has_value());
 }
+TEST(PasswordManagerTestSuite, HasPasswordCaseSensitivity)
+{
+    PasswordManager pm;
+    pm.setTestCredentials("testUser", "testPassword");
+
+    // Branch where the password does not exist
+    EXPECT_FALSE(pm.hasPassword("nonExistentService"));
+
+    // Add a password and test the branch where the password exists
+    pm.addNewPassword("email", "user@example.com", "password123");
+    EXPECT_TRUE(pm.hasPassword("email"));
+
+    // Test branch for case sensitivity (if applicable)
+    EXPECT_FALSE(pm.hasPassword("Email")); // Assuming service names are case-sensitive
+}
+TEST(PasswordManagerTestSuite, HasPasswordBranchCoverage)
+{
+    PasswordManager pm;
+    pm.setTestCredentials("testUser", "testPassword");
+
+    // Branch: Non-existent password
+    EXPECT_FALSE(pm.hasPassword("nonExistentService"));
+
+    // Branch: Existing password
+    pm.addNewPassword("email", "user@example.com", "password123");
+    EXPECT_TRUE(pm.hasPassword("email"));
+
+    // Branch: Case sensitivity (if implemented)
+    EXPECT_FALSE(pm.hasPassword("Email")); // Assuming service names are case-sensitive
+}
+TEST(PasswordManagerTestSuite, GetCredentialBranchCoverage)
+{
+    PasswordManager pm;
+    pm.setTestCredentials("testUser", "testPassword");
+
+    // Branch: Credential does not exist
+    EXPECT_FALSE(pm.getCredential("nonExistent").has_value());
+
+    // Branch: Credential exists
+    pm.addNewPassword("email", "user@example.com", "password123");
+    EXPECT_TRUE(pm.getCredential("email").has_value());
+}
 
 
 } // namespace

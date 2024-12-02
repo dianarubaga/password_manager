@@ -66,10 +66,12 @@ gtest_discover_tests(test_password_manager)
 
 # Add a custom target for code coverage
 add_custom_target(coverage
-    COMMAND lcov --capture --directory . --output-file coverage.info --branch-coverage --rc branch_coverage=1 --ignore-errors inconsistent
-    COMMAND lcov --remove coverage.info '/usr/*' '*/googletest/*' '*/password_manager/Huffman-Encoding/Huffman_C/*' --output-file filtered_coverage.info --ignore-errors inconsistent
+    COMMAND lcov --capture --directory . --output-file coverage.info --rc lcov_branch_coverage=1 --ignore-errors inconsistent
+    COMMAND lcov --remove coverage.info '/usr/*' '*/googletest/*' '*/password_manager/Huffman-Encoding/Huffman_C/*' --output-file filtered_coverage.info --rc lcov_branch_coverage=1 --ignore-errors inconsistent
     COMMAND genhtml filtered_coverage.info --output-directory coverage_report --branch-coverage --ignore-errors inconsistent,category
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Generating code coverage report"
 )
+
+
 
