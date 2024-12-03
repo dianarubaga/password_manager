@@ -13,14 +13,22 @@ A simple Password Manager built with C++ that allows users to create, store, and
 
 ## Project Structure
 
+Only relevant files are shown below:
+
 ```graphql
 password_manager/
 ├── CMakeLists.txt         # CMake configuration file
-├── main.cpp               # Contains the main program logic
-├── manager.cpp            # Implementation of Manager and PasswordManager classes
-├── manager.h              # Declaration of Manager and PasswordManager classes
-├── user_credentials.csv   # Stores user credentials (username and password)
-└── user_passwords.dat     # Stores passwords for user 'user'
+├── include/
+│   ├── encryption.h       # Declaration of encryption functions
+│   ├── manager.h          # Declaration of Manager and PasswordManager classes
+│   └── ui.h               # Declaration of UI classes
+├── src/
+│   ├── main.cpp           # Contains the main program logic
+│   ├── manager.cpp        # Implementation of Manager and PasswordManager classes
+│   ├── encryption.cpp     # Implementation of encryption functions
+│   └── ui.cpp             # Implementation of UI classes
+├── test/
+│   └── test_password_manager.cpp # Unit tests for PasswordManager
 ```
 
 ## Installation & Build Instructions
