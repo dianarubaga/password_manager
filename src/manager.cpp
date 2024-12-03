@@ -6,6 +6,7 @@
 #include <iomanip> // For formatting output
 #include <stdexcept> // For exceptions
 #include <filesystem> // For checking file existence
+#include <memory> // For smart pointers
 #include "Huffman-Encoding/Huffman_C/huffman.h" // Include Huffman Encoding library
 
 namespace PasswordNS {
@@ -232,6 +233,7 @@ void PasswordManager::saveCredentialsToFile() {
     for (const auto &entry : credentials) {
         file << entry.first << " " << entry.second << std::endl;
     }
+    // File closes automatically (RAII principle).
 }
 
 // Load Stored Passwords from File
@@ -246,6 +248,7 @@ void PasswordManager::loadCredentialsFromFile() {
     while (file >> serviceName >> username_password) {
         credentials.emplace_back(serviceName, username_password);
     }
+    // File closes automatically (RAII principle).
 }
 
 // Save User Credentials to File
@@ -256,6 +259,7 @@ void PasswordManager::saveUserCredentialsToFile() {
     }
 
     file << username << "," << mainPassword << std::endl;
+    // File closes automatically (RAII principle).
 }
 
 // Load User Credentials from File
