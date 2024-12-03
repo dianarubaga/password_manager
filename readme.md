@@ -128,5 +128,31 @@ This command will:
 - Locate the password_manager process using pgrep.
 - Run the leaks utility to analyze the memory usage of the process.
 
+## Running Performance Metrics
+
+### 1. Run all commands for CMake as mentioned above
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
+
+### 2. Run command to print the performance metrics for all functions
+
+```bash
+./performance_metrics
+```
+
+This command will:
+- Run a performance analysis on all the functionalities in the code, the following functionalities were chosen
+    - Encryption
+    - Decryption
+    - Generating Password
+    - Saving CSV File
+    - Loading from CSV File
+- The code will return the time taken for the function to run with different password lengths or differnt input sizes depending on what is being measured. 
+- Throughput was measured for both encryption and decryption
+
 
 Documentation for Huffman Compression can be found here: [![Huffman](https://img.shields.io/badge/Testing-Documentation-blue)](./huffman_compression.md)
