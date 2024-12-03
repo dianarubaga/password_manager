@@ -17,7 +17,7 @@ A simple Password Manager built with C++ that allows users to create, store, and
 password_manager/
 ├── build/                     # Build directory (created after running cmake)
 ├── googletest/                # GoogleTest submodule directory
-├── Huffman-Encoder/           # Huffman encoding library or module
+├── Huffman-Encoder/           # Huffman encoding module
 ├── CMakeLists.txt             # CMake configuration file
 ├── encryption.cpp             # Implementation of encryption-related functionality
 ├── encryption.h               # Declaration of encryption-related functionality
@@ -46,12 +46,12 @@ password_manager/
 1. **Clone or download the repository** to your local machine.
 
 
-2. **clone google test** with this specific command 
+2. **Clone google test** with this specific command 
 ```bash
 git clone https://github.com/google/googletest.git /yourPathinyour computer/ 
 ```
 
-3.Add Huffman Encoding as a submodule:
+3. **Add Huffman Encoding** as a submodule to directory:
    ```bash
    git submodule add https://github.com/BaptisteEtroy/Huffman-Encoding.git
    ```
@@ -74,17 +74,17 @@ mkdir build
 cd build
 ```
 
-7.  Run CMake to generate the necessary build files:
+7.  **Run CMake to generate the necessary build files**:
 
 ```bash
 cmake ..
 ```
-8.  Compile the project using make:
+8.  **Compile** the project using make:
 
 ```bash
 make
 ```
-9.  Run the program: After building, run the program by executing the following command:
+9.  **Run the program**: After building, run the program by executing the following command:
 
 ```bash
 ./password_manager
@@ -109,17 +109,14 @@ git submodule add https://github.com/google/googletest.git
 ./test_password_manager
 ```
 
-Documentation for Huffman Compression can be found here: [![Huffman](https://img.shields.io/badge/Testing-Documentation-blue)](./huffman_compression.md)
-
-
 ## Setting Up code coverage after running tests 
 
-### 1. make the code coverage 
+### 1. Make the code coverage 
 
 ```bash
  make coverage  
 ```
-### 2. open the code coverage online 
+### 2. Open the code coverage online 
 
 ```bash
 open coverage_report/index.html
@@ -164,5 +161,6 @@ This command will:
 - The code will return the time taken for the function to run with different password lengths or differnt input sizes depending on what is being measured. 
 - Throughput was measured for both encryption and decryption
 
+## Others
 
 Documentation for Huffman Compression can be found here: [![Huffman](https://img.shields.io/badge/Testing-Documentation-blue)](./huffman_compression.md)
