@@ -2,11 +2,12 @@
 #include <chrono>
 #include <vector>
 #include <string>
-#include "encryption.h"
-#include "manager.h"
+#include "include/encryption.h"
+#include "include/manager.h"
 
 // Function to benchmark encryption performance
-void benchmarkEncryption(const std::string& plaintext, const std::string& key) {
+void benchmarkEncryption(const std::string &plaintext, const std::string &key)
+{
     auto start = std::chrono::high_resolution_clock::now();
     auto ciphertext = EncryptionNS::encrypt(plaintext, key);
     auto end = std::chrono::high_resolution_clock::now();
@@ -21,7 +22,8 @@ void benchmarkEncryption(const std::string& plaintext, const std::string& key) {
 }
 
 // Function to benchmark decryption performance
-void benchmarkDecryption(const std::vector<unsigned char>& ciphertext, const std::string& key) {
+void benchmarkDecryption(const std::vector<unsigned char> &ciphertext, const std::string &key)
+{
     auto start = std::chrono::high_resolution_clock::now();
     auto plaintext = EncryptionNS::decrypt(ciphertext, key);
     auto end = std::chrono::high_resolution_clock::now();
@@ -36,7 +38,8 @@ void benchmarkDecryption(const std::vector<unsigned char>& ciphertext, const std
 }
 
 // Function to benchmark password generation
-void benchmarkPasswordGeneration(PasswordNS::PasswordManager& manager, int length) {
+void benchmarkPasswordGeneration(PasswordNS::PasswordManager &manager, int length)
+{
     auto start = std::chrono::high_resolution_clock::now();
     std::string password = manager.generatePassword(length);
     auto end = std::chrono::high_resolution_clock::now();
@@ -48,9 +51,10 @@ void benchmarkPasswordGeneration(PasswordNS::PasswordManager& manager, int lengt
 }
 
 // Function to benchmark file save and load operations
-void benchmarkFileOperations(PasswordNS::PasswordManager& manager) {
+void benchmarkFileOperations(PasswordNS::PasswordManager &manager)
+{
     auto start = std::chrono::high_resolution_clock::now();
-    manager.saveCredentials();  // Use public wrapper method
+    manager.saveCredentials(); // Use public wrapper method
     auto end = std::chrono::high_resolution_clock::now();
 
     auto save_duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
@@ -58,7 +62,7 @@ void benchmarkFileOperations(PasswordNS::PasswordManager& manager) {
     std::cout << "Time Taken: " << save_duration << " µs\n\n";
 
     start = std::chrono::high_resolution_clock::now();
-    manager.loadCredentials();  // Use public wrapper method
+    manager.loadCredentials(); // Use public wrapper method
     end = std::chrono::high_resolution_clock::now();
 
     auto load_duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
@@ -66,7 +70,8 @@ void benchmarkFileOperations(PasswordNS::PasswordManager& manager) {
     std::cout << "Time Taken: " << load_duration << " µs\n\n";
 }
 
-int main() {
+int main()
+{
     // Encryption key
     const std::string key = "0123456789abcdef0123456789abcdef";
 
@@ -76,11 +81,13 @@ int main() {
 
     // Set up test data for file operations
     manager.setTestCredentials("test_user", "secure_password");
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < 100; ++i)
+    {
         manager.addNewPassword("service" + std::to_string(i), "user" + std::to_string(i), "password" + std::to_string(i));
     }
 
-    for (int size : inputSizes) {
+    for (int size : inputSizes)
+    {
         const std::string plaintext(size, 'A'); // Generate test plaintext
         std::cout << "Testing with input size: " << size << " bytes\n";
 
@@ -98,7 +105,8 @@ int main() {
 
     // Test password generation for different lengths
     std::vector<int> lengths = {8, 16, 32, 64};
-    for (int length : lengths) {
+    for (int length : lengths)
+    {
         benchmarkPasswordGeneration(manager, length);
     }
 

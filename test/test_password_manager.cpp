@@ -1,5 +1,5 @@
-#include "manager.h"
-#include "encryption.h"
+#include "../include/manager.h"
+#include "../include/encryption.h"
 #include <gtest/gtest.h>
 #include <vector>
 #include <string>

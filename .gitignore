@@ -1,1 +1,10 @@
+# Ignore Jetbrains & VSCode files
+.idea/
+.vscode/
+
+# Ignore CMake build files
 build/
+cmake-build-debug/
+
+# Ignore Mac system files
+.DS_Store
